@@ -1,8 +1,12 @@
 const msg = document.querySelector(".phrase");
-let wins = 0;
-let losses = 0;
 let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 document.querySelector(".title").innerHTML = 'Practice French';
+let score = JSON.parse(localStorage.getItem('frenchScore')) || {
+  wins: 0,
+  losses: 0
+};
+
+showScore();
 
 function applyTheme() {
   document.body.style.backgroundColor = isDark ? 'rgb(25, 25, 25)' : 'rgb(244, 243, 242)';
@@ -65,23 +69,35 @@ function startGame() {
   };
 };
 
+function updateScore() {
+  localStorage.setItem('frenchScore', JSON.stringify(score));
+  showScore();
+};
+
+function showScore() {
+  document.querySelector('.score').innerHTML = `Wins: ${score.wins} | Losses: ${score.losses}`;
+};
+
 function checkAnswer() {
   const userInput = document.getElementById("userInput").value;
+  console.log(userInput);
   if (userInput.toLowerCase() === msg.english) {
     document.querySelector(".result-message").innerHTML = "Correct!";
     document.querySelector(".result-message").style.color = "limegreen";
-    wins += 1;
+    score.wins += 1;
+    updateScore();
   } else {
     document.querySelector(".result-message").innerHTML = "Incorrect.";
     document.querySelector(".result-message").style.color = "red";
-    losses += 1;
+    score.losses += 1;
+    updateScore();
   };
   const phrase = document.querySelector(".phrase").innerHTML;
   document.querySelector(".correct-answer").innerHTML = `PHRASE: ${phrase}<br>YOUR ANSWER: ${userInput}<br>CORRECT ANSWER: ${msg.english}`;
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
   document.getElementById('userInput').value = '';
-  document.querySelector('.score').innerHTML = `Wins: ${wins} | Losses: ${losses}`;
+  showScore();
 };
 
 function reroll() {
@@ -89,6 +105,6 @@ function reroll() {
   document.querySelector(".correct-answer").innerHTML = `PHRASE: ${phrase}<br>CORRECT ANSWER: ${msg.english}`;
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
-  losses += 1;
-  document.querySelector('.score').innerHTML = `Wins: ${wins} | Losses: ${losses}`;
+  score.losses += 1;
+  updateScore();
 };
