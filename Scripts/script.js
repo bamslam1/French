@@ -2,7 +2,6 @@ const msg = document.querySelector(".phrase");
 let wins = 0;
 let losses = 0;
 let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const userInput = document.getElementById("userInput").value;
 document.querySelector(".title").innerHTML = 'Practice French';
 
 function applyTheme() {
@@ -67,13 +66,12 @@ function startGame() {
 };
 
 function checkAnswer() {
+  const userInput = document.getElementById("userInput").value;
   if (userInput.toLowerCase() === msg.english) {
-    new Audio("Sounds/correct.mp3").play
     document.querySelector(".result-message").innerHTML = "Correct!";
     document.querySelector(".result-message").style.color = "limegreen";
     wins += 1;
   } else {
-    new Audio("Sounds/wrong.mp3").play
     document.querySelector(".result-message").innerHTML = "Incorrect.";
     document.querySelector(".result-message").style.color = "red";
     losses += 1;
