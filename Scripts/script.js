@@ -6,7 +6,11 @@ let score = JSON.parse(localStorage.getItem('frenchScore')) || {
   losses: 0
 };
 
+const soundWin = new Audio("Sounds/correct.mp3");
+const soundWrong = new Audio("Sounds/wrong.mp3");
+
 showScore();
+applyTheme();
 
 function applyTheme() {
   document.body.style.backgroundColor = isDark ? 'rgb(25, 25, 25)' : 'rgb(244, 243, 242)';
@@ -21,8 +25,6 @@ function applyTheme() {
     button.style.color = isDark ? 'black' : 'white';
   });
 };
-
-applyTheme();
 
 function showStartScreen() {
   document.getElementById('startScreen').hidden = false;
@@ -82,11 +84,13 @@ function checkAnswer() {
   const userInput = document.getElementById("userInput").value;
   console.log(userInput);
   if (userInput.toLowerCase() === msg.english) {
+    soundWin.play();
     document.querySelector(".result-message").innerHTML = "Correct!";
     document.querySelector(".result-message").style.color = "limegreen";
     score.wins += 1;
     updateScore();
   } else {
+    soundWrong.play();
     document.querySelector(".result-message").innerHTML = "Incorrect.";
     document.querySelector(".result-message").style.color = "red";
     score.losses += 1;
