@@ -36,3 +36,31 @@ input[type="text"] {
   cursor: pointer;
 }
 
+.wrongGif {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: wait;
+}
+
+.rightGif {
+  position: fixed;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: wait;
+}
+
+.reset-score {
+  font: bold 10px Arial, sans-serif;
+  padding: 7px 12px;
+  background-color: #ed2828;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  top: 50px;
+  right: 70px;
+  position: fixed;
+  cursor: pointer;
+}
