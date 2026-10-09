@@ -9,6 +9,7 @@
   <body>
     <img src="https://ps.w.org/svisciano-light-dark-theme-mode/assets/icon-256x256.png?rev=3535289" onclick="isDark = !isDark; applyTheme();" class="theme-button">
     <p class="score">Wins: 0 | Losses: 0</p>
+    <button class="reset-score" onclick="score.wins = 0; score.losses = 0;updateScore();">Reset Score</button>
     <main>
       <section id="startScreen">
         <h1 class="title">Something went wrong. Please reload the page. If the problem continues, report it at <a href="https://github.com/bamslam1/French/issues">https://github.com/bamslam1/French/issues</a></h1>
@@ -28,6 +29,8 @@
         <button class="reroll" onclick="reroll();">Reroll</button>
       </section>
       <section id="result" hidden>
+        <img src="https://media.tenor.com/Wlu-ZlnW7QYAAAAj/no-dislike.gif" class="wrongGif" hidden>
+        <img src="https://assets.dochipo.com/editor/animations/confetti/854a56df-cb2c-478c-ab6d-967ea2dee737.gif" class="rightGif" hidden>
         <p class="result-message"></p>
         <p class="correct-answer"></p>
         <button data-page="result" onclick="
