@@ -84,15 +84,27 @@ function checkAnswer() {
   const userInput = document.getElementById("userInput").value;
   console.log(userInput);
   if (userInput.toLowerCase() === msg.english) {
+    const gif = document.querySelector(".rightGif");
+    const result = document.querySelector(".result-message");
     soundWin.play();
-    document.querySelector(".result-message").innerHTML = "Correct!";
-    document.querySelector(".result-message").style.color = "limegreen";
+    result.innerHTML = "Correct!";
+    result.style.color = "limegreen";
+    gif.hidden = false;
+    setTimeout(() => {
+      gif.hidden = true;
+    }, 1500);
     score.wins += 1;
     updateScore();
   } else {
+    const gif = document.querySelector(".wrongGif");
+    const result = document.querySelector(".result-message");
     soundWrong.play();
-    document.querySelector(".result-message").innerHTML = "Incorrect.";
-    document.querySelector(".result-message").style.color = "red";
+    result.innerHTML = "Incorrect.";
+    result.style.color = "red";
+    gif.hidden = false;
+    setTimeout(() => {
+      gif.hidden = true;
+    }, 1000);
     score.losses += 1;
     updateScore();
   };
@@ -106,6 +118,7 @@ function checkAnswer() {
 
 function reroll() {
   const phrase = document.querySelector(".phrase").innerHTML;
+  document.querySelector(".result-message").innerHTML = '';
   document.querySelector(".correct-answer").innerHTML = `PHRASE: ${phrase}<br>CORRECT ANSWER: ${msg.english}`;
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
