@@ -5,9 +5,27 @@ let score = JSON.parse(localStorage.getItem('frenchScore')) || {
   wins: 0,
   losses: 0
 };
+const phrases = [
+  { french: "Bonjour",             answers: ["hello", "hi", "good morning"] },
+  { french: "Merci",               answers: ["thank you", "thanks"] },
+  { french: "Au revoir",           answers: ["goodbye", "bye"] },
+  { french: "S'il vous plaît",     answers: ["please"] },
+  { french: "Comment ça va?",      answers: ["how are you?", "how are you"] },
+  { french: "Je ne comprends pas", answers: ["i don't understand", "i do not understand"] },
+  { french: "Je suis désolé",      answers: ["i am sorry", "i'm sorry", "sorry"] },
+  { french: "Je t'aime",           answers: ["i love you"] },
+  { french: "Excusez-moi",         answers: ["excuse me"] },
+  { french: "Je m'appelle Tom",    answers: ["my name is tom"] },
+];
+
+let current = null;   // the phrase object on screen right now
 
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
+
+function focus() {
+document.getElementById("userInput").focus();
+};
 
 showScore();
 applyTheme();
@@ -37,38 +55,8 @@ function startGame() {
   document.getElementById("result").hidden = true;
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
-  document.getElementById("userInput").focus();
-  if (Math.random() < 0.1) {
-    msg.innerHTML = 'Bonjour';
-    msg.english = 'hello';
-  } else if (Math.random() < 0.2) {
-    msg.innerHTML = 'Merci';
-    msg.english = 'thank you';
-  } else if (Math.random() < 0.3) {
-    msg.innerHTML = 'Au revoir';
-    msg.english = 'goodbye';
-  } else if (Math.random() < 0.4) {
-    msg.innerHTML = `S'il vous plaît`;
-    msg.english = 'please';
-  } else if (Math.random() < 0.5) {
-    msg.innerHTML = 'Comment ça va?';
-    msg.english = 'how are you?';
-  } else if (Math.random() < 0.6) {
-    msg.innerHTML = 'Je ne comprends pas';
-    msg.english = `i don't understand`;
-  } else if (Math.random() < 0.7) {
-    msg.innerHTML = 'Je suis désolé';
-    msg.english = 'i am sorry';
-  } else if (Math.random() < 0.8) {
-    msg.innerHTML = `Je t'aime`;
-    msg.english = 'i love you';
-  } else if (Math.random() < 0.9) {
-    msg.innerHTML = 'Excusez-moi';
-    msg.english = 'excuse me';
-  } else {
-    msg.innerHTML = `Je m'appelle tom`;
-    msg.english = 'my name is tom';
-  };
+  focus();
+  pickPhrase();
 };
 
 function updateScore() {
@@ -82,8 +70,24 @@ function showScore() {
 
 function checkAnswer() {
   const userInput = document.getElementById("userInput").value;
-  console.log(userInput);
-  if (userInput.toLowerCase() === msg.english) {
+  document.getElementById("result").hidden = false;
+  document.getElementById("goAgain").hidden = true
+  document.getElementById('userInput').value = '';
+
+  if (!userInput.trim()) {
+    document.getElementById('userInput').value = 'INVALID ENTRY';
+    setTimeout(() => {
+      document.getElementById('userInput').value = ''
+      focus();
+      }, 1000);
+      return
+    };
+
+  document.getElementById("game").hidden = true;
+
+  const isCorrect = current.answers.some(a => normalize(a) === normalize(userInput));
+
+  if (isCorrect) {
     const gif = document.querySelector(".rightGif");
     const result = document.querySelector(".result-message");
     soundWin.play();
@@ -92,8 +96,9 @@ function checkAnswer() {
     gif.hidden = false;
     setTimeout(() => {
       gif.hidden = true;
+      document.getElementById("goAgain").hidden = false;
     }, 1500);
-    score.wins += 1;
+    score.wins++;
     updateScore();
   } else {
     const gif = document.querySelector(".wrongGif");
@@ -104,24 +109,37 @@ function checkAnswer() {
     gif.hidden = false;
     setTimeout(() => {
       gif.hidden = true;
+      document.getElementById("goAgain").hidden = false;
     }, 1000);
-    score.losses += 1;
+    score.losses++;
     updateScore();
-  };
-  const phrase = document.querySelector(".phrase").innerHTML;
-  document.querySelector(".correct-answer").innerHTML = `PHRASE: ${phrase}<br>YOUR ANSWER: ${userInput}<br>CORRECT ANSWER: ${msg.english}`;
-  document.getElementById("game").hidden = true;
-  document.getElementById("result").hidden = false;
-  document.getElementById('userInput').value = '';
+  }
+
+  document.querySelector(".correct-answer").textContent =
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWER: ${current.answers.join(" / ")}`;
+
   showScore();
 };
 
 function reroll() {
-  const phrase = document.querySelector(".phrase").innerHTML;
-  document.querySelector(".result-message").innerHTML = '';
-  document.querySelector(".correct-answer").innerHTML = `PHRASE: ${phrase}<br>CORRECT ANSWER: ${msg.english}`;
+  document.querySelector(".result-message").textContent = '';
+  document.querySelector(".correct-answer").textContent =
+    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers.join(" / ")}`;
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
-  score.losses += 1;
+  score.losses++;
   updateScore();
+};
+
+function pickPhrase() {
+  let next;
+  do {
+    next = phrases[Math.floor(Math.random() * phrases.length)];
+  } while (next === current && phrases.length > 1);   // no immediate repeats
+  current = next;
+  msg.textContent = current.french;
+};
+
+function normalize(text) {
+  return text.trim().toLowerCase().replace(/[’‘]/g, "'");   // trim, lowercase, curly to straight apostrophes
 };
