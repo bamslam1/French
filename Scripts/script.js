@@ -115,6 +115,7 @@ let current = null;   // the phrase object on screen right now
 
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
+const soundRoll = new Audio("Sounds/dice.mp3");
 
 function focus() {
 document.getElementById("userInput").focus();
@@ -136,6 +137,25 @@ function applyTheme() {
     button.style.color = isDark ? 'black' : 'white';
   });
 };
+
+function speak(text = current.french) {
+  if (!('speechSynthesis' in window))   // browser doesn't support it
+  {
+    document.getElementById('userInput').value = 'UNSUPPORTED INPUT';
+    document.querySelector('.submit').hidden = true;
+    setTimeout(() => {
+      document.getElementById('userInput').value = ''
+      focus();
+      document.querySelector('.submit').hidden = false;
+      }, 1000);
+    return;
+  }
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'fr-FR';
+  utterance.rate = 0.9;
+  speechSynthesis.speak(utterance);
+}
 
 function showStartScreen() {
   document.getElementById('startScreen').hidden = false;
@@ -166,9 +186,11 @@ function checkAnswer() {
 
   if (!userInput.trim()) {
     document.getElementById('userInput').value = 'INVALID ENTRY';
+    document.querySelector('.submit').hidden = true;
     setTimeout(() => {
       document.getElementById('userInput').value = ''
       focus();
+      document.querySelector('.submit').hidden = false;
       }, 1000);
       return
     };
@@ -215,6 +237,7 @@ function checkAnswer() {
 };
 
 function reroll() {
+  soundRoll.play();
   document.querySelector(".result-message").textContent = '';
   document.querySelector(".correct-answer").textContent =
     `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers.join(" / ")}`;
