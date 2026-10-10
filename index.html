@@ -14,7 +14,7 @@
       <section id="startScreen">
         <h1 class="title">Something went wrong. Please reload the page. If the problem continues, report it at <a href="https://github.com/bamslam1/French/issues">https://github.com/bamslam1/French/issues</a></h1>
         <p>
-          This game is designed to help you practice your French skills by providing a French phrase or word and you answer them in the input field.<br><br>Requirements:<br>1. Punctuation matters! (e.g. "Bonjour!" is different from "Bonjour").<br>2. Rerolling the phrase will take off one point.<br><br>This website is meant for learning french, not cheating it. If you use translators, you're just sabotaging yourself. I strongly recommend you don't use translators.
+          This game is designed to help you practice your French skills by providing a French phrase or word and you answer them in the input field.<br><br>Rerolling the phrase will take off one point.<br><br>This website is meant for learning french, not cheating it. If you use translators, you're just sabotaging yourself. I strongly recommend you don't use translators.
         </p>
         <button data-page="game" onclick="startGame()">Start Game</button>
       </section>
@@ -24,7 +24,7 @@
         <span lang="fr" translate="no"><p class="phrase">
         Loading...
         </p></span>
-        <input type="text" id="userInput" placeholder="Type your answer here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
+        <input type="text" id="userInput" placeholder="Type english here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
         <button class="submit" onclick="checkAnswer()">Submit</button>
         <button class="reroll" onclick="reroll();">Reroll</button>
       </section>
@@ -34,7 +34,7 @@
         <p class="result-message"></p>
         <p class="correct-answer"></p>
         <button data-page="result" onclick="
-        startGame()">Play Again</button>
+        startGame()" id="goAgain">Play Again</button>
       </section>
     </main>
     <script src="Scripts\script.js" defer></script>
