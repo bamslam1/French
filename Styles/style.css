@@ -64,3 +64,7 @@ input[type="text"] {
   position: fixed;
   cursor: pointer;
 }
+
+.correct-answer {
+  white-space: pre-line;
+}
