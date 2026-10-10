@@ -24,7 +24,7 @@
         <button class="back" onclick="showStartScreen()">Back</button>
         <span lang="fr" translate="no"><p class="phrase">
         Loading...
-        </p></span>
+        </p><button id="speech" onclick="speak();">🔊 Listen</button></span><br><br>
         <input type="text" id="userInput" placeholder="Type english here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
         <button class="submit" onclick="checkAnswer()">Submit</button>
         <button class="reroll" onclick="reroll();">Reroll</button>
