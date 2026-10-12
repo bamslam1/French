@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!--ADD REPORT BUG BUTTON--> 
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
-    <title>Practice French</title>
+    <title>FrançaisFlash</title>
     <link rel="stylesheet" href="Styles/style.css">
     <link id="favicon" rel="icon" type="image/png" href="Images/favicon-icon.ico" size="any">
   </head>
@@ -13,11 +14,11 @@
     <button class="reset-score" onclick="score.wins = 0; score.losses = 0;updateScore();">Reset Score</button>
     <main>
       <section id="startScreen">
-        <h1 class="title">Something went wrong. Please reload the page. If the problem continues, report it at <a href="https://github.com/bamslam1/French/issues">https://github.com/bamslam1/French/issues</a></h1>
+        <h1 class="title">Something went wrong. Please reload the page. If the problem persists, report it at <a href="https://github.com/bamslam1/French/issues">https://github.com/bamslam1/French/issues</a></h1>
         <p>
           This game is designed to help you practice your French skills by providing a French phrase or word and you answer them in the input field.<br><br>Rerolling the phrase will take off one point.<br><br>This website is meant for learning french, not cheating it. If you use translators, you're just sabotaging yourself. I strongly recommend you don't use translators.
         </p>
-        <button data-page="game" onclick="startGame()">Start Game</button>
+        <button data-page="game" onclick="pressedStartCount++; startGame();">Start Game</button>
       </section>
 
       <section id="game" hidden>
@@ -38,7 +39,7 @@
         <p class="correct-answer"></p>
         <button id="speech" onclick="speak();">🔊 Listen</button>
         <button data-page="result" onclick="
-        startGame()" id="goAgain">Play Again</button>
+        pickPhrase(); startGame();" id="goAgain">Play Again</button>
       </section>
     </main>
     <script src="Scripts\script.js" defer></script>
