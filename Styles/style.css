@@ -68,3 +68,11 @@ input[type="text"] {
 .correct-answer {
   white-space: pre-line;
 }
+
+.bott-right {
+  bottom: 49.5px;
+  right: 75px;
+  width: 100px;
+  height: 10px;
+  position: fixed;
+}
