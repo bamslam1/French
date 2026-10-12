@@ -1,10 +1,12 @@
 const msg = document.querySelector(".phrase");
 let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.querySelector(".title").innerHTML = 'Practice French';
+let pressedStartCount = JSON.parse(localStorage.getItem('frenchStartPressed')) ?? 0;
+document.querySelector(".title").innerHTML = 'FrançaisFlash';
 let score = JSON.parse(localStorage.getItem('frenchScore')) || {
   wins: 0,
   losses: 0
 };
+
 const phrases = [
   { french: "Bonjour",             answers: ["hello", "hi", "good morning"] },
   { french: "Merci",               answers: ["thank you", "thanks"] },
@@ -55,7 +57,7 @@ const phrases = [
   { french: "Bonne année",                 answers: ["happy new year"] },
   { french: "Santé",                       answers: ["cheers", "to your health"] },
   { french: "Pardon",                      answers: ["pardon", "sorry", "excuse me", "pardon me"] },
-    { french: "Comment allez-vous?",                    answers: ["how are you?", "how are you", "how do you do?", "how do you do"] },
+  { french: "Comment allez-vous?",                    answers: ["how are you?", "how are you", "how do you do?", "how do you do"] },
   { french: "Je vais bien",                           answers: ["i'm well", "i am well", "i'm fine", "i am fine", "i'm good", "i am good", "i'm doing well", "i am doing well"] },
   { french: "Très bien",                              answers: ["very good", "very well", "great"] },
   { french: "Pas mal",                                answers: ["not bad"] },
@@ -111,7 +113,7 @@ const phrases = [
   { french: "Maintenant",                             answers: ["now"] },
 ];
 
-let current = null;   // the phrase object on screen right now
+let current = JSON.parse(localStorage.getItem('frenchPhrase')) ?? null;   // the phrase object on screen right now
 
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
@@ -143,11 +145,24 @@ function speak(text = current.french) {
   {
     document.getElementById('userInput').value = 'UNSUPPORTED INPUT';
     document.querySelector('.submit').hidden = true;
-    setTimeout(() => {
+
+    const startTime = performance.now(); 
+    let iterations = 0;
+
+    // Loop keeps running as long as the current time minus start time is less than 1000ms
+    while (performance.now() - startTime < 1000) {
+      iterations++;
+      document.getElementById('userInput').blur();
+    };
+
+    console.log(`Loop finished! It ran ${iterations} times in 1 second.`);
+    console.log("This code runs immediately AFTER the 1 second finishes.");
+
+    /*setTimeout(() => {
       document.getElementById('userInput').value = ''
       focus();
       document.querySelector('.submit').hidden = false;
-      }, 1000);
+      }, 1000);*/
     return;
   }
   speechSynthesis.cancel();
@@ -169,7 +184,13 @@ function startGame() {
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
   focus();
-  pickPhrase();
+  const saved = JSON.parse(localStorage.getItem('frenchPhrase'));
+  if (saved) {
+    current = saved;                    // unresolved phrase: reuse it
+    msg.textContent = current.french;
+  } else {
+    pickPhrase();
+  }
 };
 
 function updateScore() {
@@ -185,9 +206,9 @@ function checkAnswer() {
   const userInput = document.getElementById("userInput").value;
 
   if (!userInput.trim()) {
-    document.getElementById('userInput').value = 'INVALID ENTRY';
     document.querySelector('.submit').hidden = true;
-    document.getElementById('userInput').blur();
+    document.getElementById('userInput').value = 'INVALID ENTRY'
+    document.querySelector('.submit').hidden = false;
     setTimeout(() => {
       document.getElementById('userInput').value = ''
       focus();
@@ -246,6 +267,7 @@ function reroll() {
   document.getElementById("result").hidden = false;
   score.losses++;
   updateScore();
+  pickPhrase();
 };
 
 function pickPhrase() {
@@ -254,6 +276,7 @@ function pickPhrase() {
     next = phrases[Math.floor(Math.random() * phrases.length)];
   } while (next === current && phrases.length > 1);   // no immediate repeats
   current = next;
+  localStorage.setItem('frenchPhrase', JSON.stringify(current));
   msg.textContent = current.french;
 };
 
