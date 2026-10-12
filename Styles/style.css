@@ -1,9 +1,9 @@
 body {
-  font: normal 16px Arial, sans-serif;
+  font: normal 16px verdana;
 }
 
 button {
-  font: bold 14px Arial, sans-serif;
+  font: bold 14px verdana;
   padding: 7.5px 15px;
   background-color: #4CAF50;
   color: white;
@@ -13,7 +13,7 @@ button {
 }
 
 input[type="text"] {
-  font: normal 14px Arial, sans-serif;
+  font: normal 14px verdana;
   padding: 7px;
   width: 150px;
   border: 1px solid #ccc;
@@ -24,7 +24,7 @@ input[type="text"] {
   top: 0px;
   right: 10px;
   position: fixed;
-  font: bold 20px Arial, sans-serif;
+  font: bold 20px verdana;
 }
 
 .theme-button {
@@ -53,7 +53,7 @@ input[type="text"] {
 }
 
 .reset-score {
-  font: bold 10px Arial, sans-serif;
+  font: bold 10px verdana;
   padding: 7px 12px;
   background-color: #ed2828;
   color: white;
