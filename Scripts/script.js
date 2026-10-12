@@ -16,7 +16,7 @@ const phrases = [
   { french: "Je t'aime",           answers: ["i love you"] },
   { french: "Excusez-moi",         answers: ["excuse me"] },
   { french: "Je m'appelle Tom",    answers: ["my name is tom"] },
-    { french: "Salut",                       answers: ["hi", "hey", "hello"] },
+  { french: "Salut",                       answers: ["hi", "hey", "hello"] },
   { french: "Bonsoir",                     answers: ["good evening"] },
   { french: "Bonne nuit",                  answers: ["good night"] },
   { french: "Bonne journée",               answers: ["have a good day", "have a nice day", "good day"] },
@@ -187,6 +187,7 @@ function checkAnswer() {
   if (!userInput.trim()) {
     document.getElementById('userInput').value = 'INVALID ENTRY';
     document.querySelector('.submit').hidden = true;
+    document.getElementById('userInput').blur();
     setTimeout(() => {
       document.getElementById('userInput').value = ''
       focus();
@@ -231,7 +232,7 @@ function checkAnswer() {
   }
 
   document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWER: ${current.answers.join(" / ")}`;
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nACCEPTED ANSWERS: ${current.answers.join(" / ")}`;
 
   showScore();
 };
