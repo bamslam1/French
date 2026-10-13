@@ -1,13 +1,21 @@
 const msg = document.querySelector(".phrase");
 let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-let pressedStartCount = JSON.parse(localStorage.getItem('frenchStartPressed')) ?? 0;
+
+function load(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch { return fallback; }
+}
+
+let prevFrench = null;
+
+let pressedStartCount = load('frenchStartPressed', 0);   // no longer used, kept so old onclick handlers don't error
 document.querySelector(".title").innerHTML = 'FrançaisFlash';
-let score = JSON.parse(localStorage.getItem('frenchScore')) || {
+let score = load('frenchScore', null) || {
   wins: 0,
   losses: 0
 };
 
-const phrases = [
+const allPhrases = [
   { french: "Bonjour",             answers: ["hello", "hi", "good morning"] },
   { french: "Merci",               answers: ["thank you", "thanks"] },
   { french: "Au revoir",           answers: ["goodbye", "bye"] },
@@ -113,7 +121,105 @@ const phrases = [
   { french: "Maintenant",                             answers: ["now"] },
 ];
 
-let current = JSON.parse(localStorage.getItem('frenchPhrase')) ?? null;   // the phrase object on screen right now
+const easyPhrases = [
+  { french: "Bonjour",          answers: ["hello", "hi", "good morning"] },
+  { french: "Salut",            answers: ["hi", "hey", "hello"] },
+  { french: "Bonsoir",          answers: ["good evening"] },
+  { french: "Au revoir",        answers: ["goodbye", "bye"] },
+  { french: "Merci",            answers: ["thank you", "thanks"] },
+  { french: "S'il vous plaît",  answers: ["please"] },
+  { french: "Oui",              answers: ["yes"] },
+  { french: "Non",              answers: ["no"] },
+  { french: "Pardon",           answers: ["sorry", "pardon", "excuse me"] },
+
+  { french: "Un",               answers: ["one", "1"] },
+  { french: "Deux",             answers: ["two", "2"] },
+  { french: "Trois",            answers: ["three", "3"] },
+  { french: "Quatre",           answers: ["four", "4"] },
+  { french: "Cinq",             answers: ["five", "5"] },
+  { french: "Six",              answers: ["six", "6"] },
+  { french: "Sept",             answers: ["seven", "7"] },
+  { french: "Huit",             answers: ["eight", "8"] },
+  { french: "Neuf",             answers: ["nine", "9"] },
+  { french: "Dix",              answers: ["ten", "10"] },
+
+  { french: "Rouge",            answers: ["red"] },
+  { french: "Bleu",             answers: ["blue"] },
+  { french: "Vert",             answers: ["green"] },
+  { french: "Jaune",            answers: ["yellow"] },
+  { french: "Noir",             answers: ["black"] },
+  { french: "Blanc",            answers: ["white"] },
+
+  { french: "L'eau",            answers: ["water", "the water"] },
+  { french: "Le pain",          answers: ["bread", "the bread"] },
+  { french: "Le lait",          answers: ["milk", "the milk"] },
+  { french: "Le café",          answers: ["coffee", "the coffee"] },
+  { french: "La pomme",         answers: ["apple", "the apple", "an apple"] },
+  { french: "Le chat",          answers: ["cat", "the cat", "a cat"] },
+  { french: "Le chien",         answers: ["dog", "the dog", "a dog"] },
+  { french: "La maison",        answers: ["house", "the house", "a house", "home"] },
+  { french: "L'école",          answers: ["school", "the school"] },
+  { french: "Le livre",         answers: ["book", "the book", "a book"] },
+  { french: "L'ami",            answers: ["friend", "the friend", "a friend"] },
+  { french: "La famille",       answers: ["family", "the family"] },
+];
+
+const mediumPhrases = [
+  { french: "Je suis étudiant",            answers: ["i am a student", "i'm a student"] },
+  { french: "Je suis canadien",            answers: ["i am canadian", "i'm canadian"] },
+  { french: "Je viens du Canada",          answers: ["i come from canada", "i am from canada", "i'm from canada"] },
+  { french: "Je parle anglais",            answers: ["i speak english"] },
+  { french: "J'habite ici",                answers: ["i live here"] },
+  { french: "Je travaille ici",            answers: ["i work here"] },
+  { french: "Je suis en vacances",         answers: ["i am on vacation", "i'm on vacation", "i am on holiday", "i'm on holiday"] },
+  { french: "J'aime le chocolat",          answers: ["i like chocolate", "i love chocolate"] },
+  { french: "J'aime lire",                 answers: ["i like to read", "i like reading", "i love to read", "i love reading"] },
+  { french: "Je veux manger",              answers: ["i want to eat"] },
+  { french: "Je veux dormir",              answers: ["i want to sleep"] },
+  { french: "J'ai un chien",               answers: ["i have a dog"] },
+  { french: "J'ai deux frères",            answers: ["i have two brothers"] },
+  { french: "J'ai mal à la tête",          answers: ["i have a headache", "my head hurts", "my head aches"] },
+  { french: "Elle est ma sœur",            answers: ["she is my sister", "she's my sister"] },
+  { french: "Il est mon ami",              answers: ["he is my friend", "he's my friend"] },
+  { french: "Nous sommes amis",            answers: ["we are friends", "we're friends"] },
+  { french: "Ils sont contents",           answers: ["they are happy", "they're happy", "they are glad", "they're glad"] },
+  { french: "C'est ma maison",             answers: ["it's my house", "it is my house", "this is my house", "that's my house", "that is my house"] },
+  { french: "Il est tard",                 answers: ["it's late", "it is late"] },
+  { french: "Il est tôt",                  answers: ["it's early", "it is early"] },
+  { french: "Il y a un problème",          answers: ["there is a problem", "there's a problem"] },
+  { french: "Qu'est-ce que tu fais?",      answers: ["what are you doing?", "what are you doing"] },
+  { french: "Où est la gare?",             answers: ["where is the train station?", "where is the train station", "where's the train station?", "where's the train station", "where is the station?", "where is the station", "where's the station?", "where's the station"] },
+  { french: "Où est l'hôtel?",             answers: ["where is the hotel?", "where is the hotel", "where's the hotel?", "where's the hotel"] },
+  { french: "Le train part à huit heures", answers: ["the train leaves at eight", "the train leaves at 8", "the train leaves at eight o'clock", "the train leaves at 8 o'clock", "the train departs at eight"] },
+
+  { french: "Lundi",                       answers: ["monday"] },
+  { french: "Mardi",                       answers: ["tuesday"] },
+  { french: "Mercredi",                    answers: ["wednesday"] },
+  { french: "Jeudi",                       answers: ["thursday"] },
+  { french: "Vendredi",                    answers: ["friday"] },
+  { french: "Samedi",                      answers: ["saturday"] },
+  { french: "Dimanche",                    answers: ["sunday"] },
+
+  { french: "Le petit déjeuner",           answers: ["breakfast", "the breakfast"] },
+  { french: "Le déjeuner",                 answers: ["lunch", "the lunch"] },
+  { french: "Le dîner",                    answers: ["dinner", "the dinner", "supper"] },
+  { french: "Une bouteille d'eau",         answers: ["a bottle of water", "bottle of water"] },
+];
+
+let backToScreen = 0;
+
+const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases };
+
+let currentMode = load('frenchGamemode', 'all');
+if (!phrasesByMode[currentMode]) currentMode = 'all';
+let phrases = phrasesByMode[currentMode];                 // the array the game is drawing from
+
+let savedPhrases = load('frenchSavedPhrases', {});        // last unresolved phrase for each mode
+let current = savedPhrases[currentMode] ?? null;          // the phrase object on screen right now
+
+function storeSavedPhrases() {
+  localStorage.setItem('frenchSavedPhrases', JSON.stringify(savedPhrases));
+}
 
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
@@ -140,53 +246,58 @@ function applyTheme() {
   });
 };
 
+function invalidErr(log) {
+  console.warn(log);
+  document.querySelector('.submit').hidden = true;
+  document.getElementById('userInput').blur();
+  setTimeout(() => {
+    document.getElementById('userInput').value = ''
+    focus();
+    document.querySelector('.submit').hidden = false;
+    }, 1000);
+};
+
 function speak(text = current.french) {
   if (!('speechSynthesis' in window))   // browser doesn't support it
   {
-    document.getElementById('userInput').value = 'UNSUPPORTED INPUT';
-    document.querySelector('.submit').hidden = true;
-
-    const startTime = performance.now(); 
-    let iterations = 0;
-
-    // Loop keeps running as long as the current time minus start time is less than 1000ms
-    while (performance.now() - startTime < 1000) {
-      iterations++;
-      document.getElementById('userInput').blur();
-    };
-
-    console.log(`Loop finished! It ran ${iterations} times in 1 second.`);
-    console.log("This code runs immediately AFTER the 1 second finishes.");
-
-    /*setTimeout(() => {
-      document.getElementById('userInput').value = ''
-      focus();
-      document.querySelector('.submit').hidden = false;
-      }, 1000);*/
+    document.getElementById('userInput').value = 'SPEACH UNSUPPORTED';
+    invalidErr('SPEACH UNSUPPORTED');
     return;
   }
+  let utterance = null;
   speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
+  if (document.getElementById('result').hidden) {
+    utterance = new SpeechSynthesisUtterance(text);
+  } else {
+    utterance = new SpeechSynthesisUtterance(prevFrench);
+  };
   utterance.lang = 'fr-FR';
   utterance.rate = 0.9;
   speechSynthesis.speak(utterance);
-}
-
-function showStartScreen() {
-  document.getElementById('startScreen').hidden = false;
-  document.getElementById('game').hidden = true;
-  document.getElementById('result').hidden = true;
 };
 
-function startGame() {
-  document.getElementById("startScreen").hidden = true;
+function showStartScreen() {
+  document.getElementById('gamemode').hidden = true;
+  document.getElementById('game').hidden = true;
+  document.getElementById('result').hidden = true;
+  document.getElementById('startScreen').hidden = false;
+};
+
+function startGame(mode = currentMode) {
+  if (!phrasesByMode[mode]) mode = 'all';
+  document.getElementById("gamemode").hidden = true;
   document.getElementById("result").hidden = true;
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
   focus();
-  const saved = JSON.parse(localStorage.getItem('frenchPhrase'));
+
+  currentMode = mode;
+  phrases = phrasesByMode[mode];
+  localStorage.setItem('frenchGamemode', JSON.stringify(mode));
+
+  const saved = savedPhrases[mode];
   if (saved) {
-    current = saved;                    // unresolved phrase: reuse it
+    current = saved;
     msg.textContent = current.french;
   } else {
     pickPhrase();
@@ -207,16 +318,14 @@ function checkAnswer() {
 
   if (!userInput.trim()) {
     document.querySelector('.submit').hidden = true;
-    document.getElementById('userInput').value = 'INVALID ENTRY'
-    document.querySelector('.submit').hidden = false;
-    setTimeout(() => {
-      document.getElementById('userInput').value = ''
-      focus();
-      document.querySelector('.submit').hidden = false;
-      }, 1000);
-      return
+    document.getElementById('userInput').value = 'INVALID ENTRY';
+    invalidErr('INVALID ENTRY');
+    return
     };
-  
+
+  delete savedPhrases[currentMode];
+  storeSavedPhrases();
+
   document.getElementById("result").hidden = false;
   document.getElementById("goAgain").hidden = true
   document.getElementById('userInput').value = '';
@@ -254,7 +363,7 @@ function checkAnswer() {
 
   document.querySelector(".correct-answer").textContent =
     `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nACCEPTED ANSWERS: ${current.answers.join(" / ")}`;
-
+  prevFrench = current.french;
   showScore();
 };
 
@@ -267,6 +376,7 @@ function reroll() {
   document.getElementById("result").hidden = false;
   score.losses++;
   updateScore();
+  prevFrench = current.french;
   pickPhrase();
 };
 
@@ -274,12 +384,20 @@ function pickPhrase() {
   let next;
   do {
     next = phrases[Math.floor(Math.random() * phrases.length)];
-  } while (next === current && phrases.length > 1);   // no immediate repeats
+  } while (next.french === current?.french && phrases.length > 1);
   current = next;
-  localStorage.setItem('frenchPhrase', JSON.stringify(current));
+  savedPhrases[currentMode] = current;
+  storeSavedPhrases();
   msg.textContent = current.french;
 };
 
 function normalize(text) {
   return text.trim().toLowerCase().replace(/[’‘]/g, "'");   // trim, lowercase, curly to straight apostrophes
+};
+
+function gamemode() {
+  document.getElementById('startScreen').hidden = true;
+  document.getElementById('result').hidden = true;
+  document.getElementById('gamemode').hidden = false;
+  document.getElementById('game').hidden = true;
 };
