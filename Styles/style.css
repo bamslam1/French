@@ -53,14 +53,22 @@ input[type="text"] {
 }
 
 .reset-score {
+  top: 50px;
+  right: 50px;
+}
+
+.reset-score2 {
+  top: 50px;
+  right: 150px;
+}
+
+.reset-score, .reset-score2 {
   font: bold 10px verdana;
   padding: 7px 12px;
   background-color: #ed2828;
   color: white;
   border: none;
   border-radius: 5px;
-  top: 50px;
-  right: 70px;
   position: fixed;
   cursor: pointer;
 }
@@ -75,4 +83,12 @@ input[type="text"] {
   width: 100px;
   height: 10px;
   position: fixed;
+}
+
+.ver {
+  font: bold 12px monospace;
+  color: grey;
+  position: relative;
+  top: 0px;
+  z-index: -1;
 }
