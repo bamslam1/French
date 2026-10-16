@@ -8,7 +8,7 @@ function load(key, fallback) {
 
 let prevFrench = null;
 
-let pressedStartCount = load('frenchStartPressed', 0);   // no longer used, kept so old onclick handlers don't error
+let pressedStartCount = load('frenchStartPressed', 0);
 document.querySelector(".title").innerHTML = 'FrançaisFlash';
 let score = load('frenchScore', null) || {
   wins: 0,
@@ -206,16 +206,59 @@ const mediumPhrases = [
   { french: "Une bouteille d'eau",         answers: ["a bottle of water", "bottle of water"] },
 ];
 
+const hardPhrases = [
+  { french: "Je n'en peux plus",                                  answers: ["i can't take it anymore", "i cannot take it anymore", "i can't take any more", "i can't do this anymore"] },
+  { french: "Il pleut des cordes",                                answers: ["it's raining cats and dogs", "it is raining cats and dogs", "it's pouring", "it is pouring"] },
+  { french: "Je n'ai rien à me mettre",                           answers: ["i have nothing to wear", "i've got nothing to wear", "i have nothing to put on"] },
+  { french: "Ça ne me dit rien",                                  answers: ["it doesn't ring a bell", "it does not ring a bell", "i don't feel like it", "it doesn't appeal to me"] },
+  { french: "Je me suis trompé de chemin",                        answers: ["i took the wrong road", "i took the wrong way", "i went the wrong way", "i got the wrong road"] },
+  { french: "Il faut que je parte avant la fin",                  answers: ["i have to leave before the end", "i must leave before the end", "i need to leave before the end"] },
+  { french: "Je voudrais que tu viennes avec nous",               answers: ["i would like you to come with us", "i'd like you to come with us", "i want you to come with us"] },
+  { french: "Quoi que tu fasses, je serai là",                    answers: ["whatever you do, i will be there", "whatever you do, i'll be there", "no matter what you do, i'll be there", "no matter what you do, i will be there"] },
+  { french: "Si j'avais su, je ne serais pas venu",               answers: ["if i had known, i would not have come", "if i had known, i wouldn't have come", "if i'd known, i wouldn't have come"] },
+  { french: "Elle a fini par comprendre",                         answers: ["she ended up understanding", "she finally understood", "she eventually understood", "she ended up understanding it"] },
+  { french: "Je m'en fiche",                                      answers: ["i don't care", "i do not care", "i couldn't care less", "i could not care less"] },
+  { french: "C'est à peine croyable",                             answers: ["it's hardly believable", "it is hardly believable", "it's barely believable", "it is barely believable", "it's hard to believe"] },
+  { french: "Je n'ai pas du tout envie d'y aller",                answers: ["i don't feel like going there at all", "i do not feel like going at all", "i don't want to go at all", "i have no desire to go there at all"] },
+  { french: "Tu aurais dû me le dire",                            answers: ["you should have told me", "you should have told me that", "you ought to have told me"] },
+  { french: "Il a eu beau essayer, il n'a pas réussi",            answers: ["no matter how hard he tried, he did not succeed", "no matter how hard he tried, he didn't succeed", "he tried in vain, he did not succeed", "despite his efforts, he didn't succeed"] },
+  { french: "Je ne sais pas de quoi tu parles",                   answers: ["i don't know what you're talking about", "i do not know what you are talking about", "i don't know what you are talking about"] },
+  { french: "Ils se sont rendu compte de leur erreur",            answers: ["they realized their mistake", "they realised their mistake", "they realized their error", "they realised their error"] },
+  { french: "C'est le moins que je puisse faire",                 answers: ["it's the least i can do", "it is the least i can do", "that's the least i can do", "that is the least i can do"] },
+  { french: "On ne peut pas tout avoir",                          answers: ["you can't have everything", "you cannot have everything", "we can't have everything", "one can't have everything"] },
+  { french: "Il vaut mieux tard que jamais",                      answers: ["better late than never", "it is better late than never", "it's better late than never"] },
+  { french: "Je suis à bout de forces",                           answers: ["i'm exhausted", "i am exhausted", "i have no strength left", "i'm out of strength", "i am out of strength"] },
+  { french: "Elle fait comme si de rien n'était",                 answers: ["she acts as if nothing happened", "she's acting as if nothing happened", "she is acting as if nothing happened", "she acts like nothing happened", "she's acting like nothing happened"] },
+  { french: "J'ai failli rater mon train",                        answers: ["i almost missed my train", "i nearly missed my train", "i just about missed my train"] },
+  { french: "Je ne m'attendais pas à ça",                         answers: ["i wasn't expecting that", "i was not expecting that", "i didn't expect that", "i did not expect that", "i wasn't expecting this", "i was not expecting this"] },
+  { french: "Peu importe ce qu'il dit",                           answers: ["it doesn't matter what he says", "it does not matter what he says", "no matter what he says", "whatever he says"] },
+  { french: "Il s'agit d'une question de temps",                  answers: ["it's a matter of time", "it is a matter of time", "it's about a question of time", "it is a question of time", "it's a question of time"] },
+  { french: "Je me suis levé du pied gauche",                     answers: ["i got up on the wrong side of the bed", "i woke up on the wrong side of the bed", "i got out of bed on the wrong side"] },
+  { french: "Il ne manquait plus que ça",                         answers: ["that's all i needed", "that is all i needed", "that's all we needed", "that was all we needed", "that was all that was missing", "just what i needed"] },
+  { french: "À quoi bon essayer",                                 answers: ["what's the point of trying", "what is the point of trying", "what's the use of trying", "what is the use of trying", "why bother trying"] },
+  { french: "Je tiens à vous remercier",                          answers: ["i want to thank you", "i would like to thank you", "i'd like to thank you", "i really want to thank you"] },
+  { french: "Il est de plus en plus difficile de trouver du travail", answers: ["it is more and more difficult to find work", "it's more and more difficult to find work", "it is getting harder and harder to find a job", "it's getting harder and harder to find work", "it's harder and harder to find a job"] },
+  { french: "Nous avons dû reporter la réunion",                  answers: ["we had to postpone the meeting", "we had to put off the meeting", "we had to reschedule the meeting"] },
+  { french: "Faute de temps, je n'ai pas pu finir",               answers: ["for lack of time, i couldn't finish", "for lack of time, i could not finish", "due to lack of time, i couldn't finish", "for lack of time i couldn't finish", "i couldn't finish for lack of time", "i couldn't finish due to a lack of time"] },
+  { french: "Elle est loin d'être bête",                          answers: ["she's far from stupid", "she is far from stupid", "she's far from being stupid", "she is far from being stupid", "she is anything but stupid"] },
+  { french: "Tant pis pour lui",                                  answers: ["too bad for him", "that's his loss", "that is his loss", "so much the worse for him", "tough luck for him"] },
+  { french: "Il a tout fait pour que ça marche",                  answers: ["he did everything to make it work", "he did everything so that it would work", "he did everything he could to make it work", "he did all he could to make it work"] },
+  { french: "Je n'arrive pas à me décider",                       answers: ["i can't make up my mind", "i cannot make up my mind", "i can't decide", "i cannot decide", "i'm unable to decide"] },
+  { french: "Rien ne sert de courir, il faut partir à point",     answers: ["slow and steady wins the race", "there's no use running, you have to leave on time", "there is no point in running, you have to leave in time", "it's no use running, you have to start on time"] },
+  { french: "Ce n'est pas la peine d'insister",                   answers: ["there's no point in insisting", "there is no point in insisting", "it's not worth insisting", "it is not worth insisting", "there's no use insisting", "it's no use insisting"] },
+  { french: "Mieux vaut prévenir que guérir",                     answers: ["prevention is better than cure", "an ounce of prevention is worth a pound of cure", "it's better to prevent than to cure", "it is better to prevent than to cure", "better safe than sorry"] },
+];
+
 let backToScreen = 0;
 
-const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases };
+const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases };
 
 let currentMode = load('frenchGamemode', 'all');
 if (!phrasesByMode[currentMode]) currentMode = 'all';
-let phrases = phrasesByMode[currentMode];                 // the array the game is drawing from
+let phrases = phrasesByMode[currentMode];
 
-let savedPhrases = load('frenchSavedPhrases', {});        // last unresolved phrase for each mode
-let current = savedPhrases[currentMode] ?? null;          // the phrase object on screen right now
+let savedPhrases = load('frenchSavedPhrases', {});
+let current = savedPhrases[currentMode] ?? null;
 
 function storeSavedPhrases() {
   localStorage.setItem('frenchSavedPhrases', JSON.stringify(savedPhrases));
@@ -258,7 +301,7 @@ function invalidErr(log) {
 };
 
 function speak(text = current.french) {
-  if (!('speechSynthesis' in window))   // browser doesn't support it
+  if (!('speechSynthesis' in window))
   {
     document.getElementById('userInput').value = 'SPEACH UNSUPPORTED';
     invalidErr('SPEACH UNSUPPORTED');
@@ -304,10 +347,46 @@ function startGame(mode = currentMode) {
   }
 };
 
-function updateScore() {
-  localStorage.setItem('frenchScore', JSON.stringify(score));
+let modeScores = {};
+try {
+  const MODES = ['all', 'easy', 'medium', 'hard'];
+  const readJSON = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
+  const num = v => Number(v) || 0;
+
+  const savedScores = readJSON('frenchScores');
+  const oldScore = readJSON('frenchScore');
+  for (const m of MODES) {
+    modeScores[m] = { wins: num(savedScores?.[m]?.wins), losses: num(savedScores?.[m]?.losses) };
+  }
+  if (!savedScores && oldScore) {
+    modeScores.all = { wins: num(oldScore.wins), losses: num(oldScore.losses) };
+  }
+
+  const scoreOfCurrentMode = () => (modeScores[currentMode] ??= { wins: 0, losses: 0 });
+
+  updateScore = function () {
+    localStorage.setItem('frenchScores', JSON.stringify(modeScores));
+    showScore();
+  };
+
+  showScore = function () {
+    const label = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+    document.querySelector('.score').innerHTML = `${label}: Wins ${score.wins} | Losses ${score.losses}`;
+  };
+
+  const originalStartGame = startGame;
+  startGame = function (...args) {
+    const result = originalStartGame.apply(this, args);
+    score = scoreOfCurrentMode();
+    showScore();
+    return result;
+  };
+
+  score = scoreOfCurrentMode();
   showScore();
-};
+} catch (err) {
+  console.error('Per-gamemode score setup failed:', err);
+}
 
 function showScore() {
   document.querySelector('.score').innerHTML = `Wins: ${score.wins} | Losses: ${score.losses}`;
@@ -392,7 +471,7 @@ function pickPhrase() {
 };
 
 function normalize(text) {
-  return text.trim().toLowerCase().replace(/[’‘]/g, "'");   // trim, lowercase, curly to straight apostrophes
+  return text.trim().toLowerCase().replace(/[’‘]/g, "'");
 };
 
 function gamemode() {
