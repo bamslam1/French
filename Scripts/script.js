@@ -121,6 +121,8 @@ const allPhrases = [
   { french: "Maintenant",                             answers: ["now"] },
 ];
 
+let customPhrases = load('customPhrases', []);
+
 const easyPhrases = [
   { french: "Bonjour",          answers: ["hello", "hi", "good morning"] },
   { french: "Salut",            answers: ["hi", "hey", "hello"] },
@@ -249,9 +251,15 @@ const hardPhrases = [
   { french: "Mieux vaut prévenir que guérir",                     answers: ["prevention is better than cure", "an ounce of prevention is worth a pound of cure", "it's better to prevent than to cure", "it is better to prevent than to cure", "better safe than sorry"] },
 ];
 
+const soundWin = new Audio("Sounds/correct.mp3");
+const soundWrong = new Audio("Sounds/wrong.mp3");
+const soundRoll = new Audio("Sounds/dice.mp3");
+
+const KEY = "customPhrases";
+
 let backToScreen = 0;
 
-const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases };
+const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases, custom: customPhrases };
 
 let currentMode = load('frenchGamemode', 'all');
 if (!phrasesByMode[currentMode]) currentMode = 'all';
@@ -262,11 +270,27 @@ let current = savedPhrases[currentMode] ?? null;
 
 function storeSavedPhrases() {
   localStorage.setItem('frenchSavedPhrases', JSON.stringify(savedPhrases));
-}
+};
 
-const soundWin = new Audio("Sounds/correct.mp3");
-const soundWrong = new Audio("Sounds/wrong.mp3");
-const soundRoll = new Audio("Sounds/dice.mp3");
+function addToCustom() {
+  const french = document.getElementById('frenchCustom').value;
+  const english = document.getElementById('englishCustom').value;
+  if (french.trim() !== '' && english.trim() !== '') {
+    addPhrase(french, english);
+    custom();
+    console.log(customPhrases);
+  };
+};
+
+function addPhrase(french, english) {
+  customPhrases.push({ french: french.trim(), answers: english.trim() });
+  localStorage.setItem(KEY, JSON.stringify(customPhrases));
+};
+
+function deletePhrase(i) {
+  customPhrases.splice(i, 1);
+  localStorage.setItem(KEY, JSON.stringify(customPhrases));
+};
 
 function focus() {
 document.getElementById("userInput").focus();
@@ -329,6 +353,7 @@ function showStartScreen() {
 function startGame(mode = currentMode) {
   if (!phrasesByMode[mode]) mode = 'all';
   document.getElementById("gamemode").hidden = true;
+  document.getElementById("custom").hidden = true;
   document.getElementById("result").hidden = true;
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
@@ -369,12 +394,59 @@ try {
     showScore();
   };
 
+function removeFromList() {
+  customPhrases.forEach(() => {
+  try {document.querySelector('li').remove(); 
+  console.log('deleted');}
+  catch {return;};
+  });
+  try {document.querySelector('li').remove(); 
+    console.log('deleted');}
+  catch {};
+};
+
+function custom() {
+  document.getElementById("game").hidden = true;
+  document.getElementById("gamemode").hidden = true;
+  document.getElementById("result").hidden = true;
+  document.getElementById("custom").hidden = false;
+  const listContainer = document.getElementById('items');
+
+  removeFromList();
+
+  customPhrases.forEach((item, index) => {
+    const listItem = document.createElement('li');
+    listItem.style.display = 'flex';
+    listItem.style.gap = '20px';
+    listItem.style.marginBottom = '20px';
+
+    const itemText = document.createElement('span');
+    console.log(customPhrases)
+    try {itemText.textContent = `${item.french} = ${item.answers}`;}
+    catch {console.error('No Phrases');};
+
+    const actionButton = document.createElement('button');
+    actionButton.textContent = 'Remove';
+    actionButton.style.backgroundColor = 'red';
+
+    actionButton.addEventListener('click', () => {
+      deletePhrase(index);
+      custom();
+      return
+    });
+
+    listItem.appendChild(itemText);
+    listItem.appendChild(actionButton);
+    listContainer.appendChild(listItem);
+  });
+};
+
   showScore = function () {
     const label = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
     document.querySelector('.score').innerHTML = `${label}: Wins ${score.wins} | Losses ${score.losses}`;
   };
 
-  const originalStartGame = startGame;
+const originalStartGame = startGame;
   startGame = function (...args) {
     const result = originalStartGame.apply(this, args);
     score = scoreOfCurrentMode();
@@ -440,17 +512,24 @@ function checkAnswer() {
     updateScore();
   }
 
-  document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nACCEPTED ANSWERS: ${current.answers.join(" / ")}`;
+  showAnswers();
   prevFrench = current.french;
   showScore();
 };
 
+function showAnswers() {
+  if (current.answers.length < 2) {
+    document.querySelector(".correct-answer").textContent =
+    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers.join(" / ")}`} else {
+      document.querySelector(".correct-answer").textContent =
+    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers}`
+    };
+}
+
 function reroll() {
   soundRoll.play();
   document.querySelector(".result-message").textContent = '';
-  document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers.join(" / ")}`;
+  showAnswers();
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
   score.losses++;
@@ -477,6 +556,7 @@ function normalize(text) {
 function gamemode() {
   document.getElementById('startScreen').hidden = true;
   document.getElementById('result').hidden = true;
+  document.getElementById('custom').hidden = true;
   document.getElementById('gamemode').hidden = false;
   document.getElementById('game').hidden = true;
 };
