@@ -121,7 +121,10 @@ const allPhrases = [
   { french: "Maintenant",                             answers: ["now"] },
 ];
 
-let customPhrases = load('customPhrases', []);
+let customPhrases = load('customPhrases', []).map(p => ({
+  french: p.french,
+  answers: Array.isArray(p.answers) ? p.answers : [String(p.answers)]
+}));
 
 const easyPhrases = [
   { french: "Bonjour",          answers: ["hello", "hi", "good morning"] },
@@ -262,11 +265,13 @@ let backToScreen = 0;
 const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases, custom: customPhrases };
 
 let currentMode = load('frenchGamemode', 'all');
-if (!phrasesByMode[currentMode]) currentMode = 'all';
+
 let phrases = phrasesByMode[currentMode];
 
 let savedPhrases = load('frenchSavedPhrases', {});
 let current = savedPhrases[currentMode] ?? null;
+
+if (savedPhrases.custom && !Array.isArray(savedPhrases.custom.answers)) delete savedPhrases.custom;
 
 function storeSavedPhrases() {
   localStorage.setItem('frenchSavedPhrases', JSON.stringify(savedPhrases));
@@ -275,15 +280,15 @@ function storeSavedPhrases() {
 function addToCustom() {
   const french = document.getElementById('frenchCustom').value;
   const english = document.getElementById('englishCustom').value;
-  if (french.trim() !== '' && english.trim() !== '') {
-    addPhrase(french, english);
+  if (french.trim() !== '' && english.trim() !== '') {addPhrase
+    (french, english);
     custom();
-    console.log(customPhrases);
   };
 };
 
 function addPhrase(french, english) {
-  customPhrases.push({ french: french.trim(), answers: english.trim() });
+  
+  customPhrases.push({ french: french.trim(), answers: english.split('/').map(s => s.trim()).filter(Boolean) });
   localStorage.setItem(KEY, JSON.stringify(customPhrases));
 };
 
@@ -396,12 +401,10 @@ try {
 
 function removeFromList() {
   customPhrases.forEach(() => {
-  try {document.querySelector('li').remove(); 
-  console.log('deleted');}
+  try {document.querySelector('li').remove();}
   catch {return;};
   });
-  try {document.querySelector('li').remove(); 
-    console.log('deleted');}
+  try {document.querySelector('li').remove();}
   catch {};
 };
 
@@ -421,9 +424,8 @@ function custom() {
     listItem.style.marginBottom = '20px';
 
     const itemText = document.createElement('span');
-    console.log(customPhrases)
     try {itemText.textContent = `${item.french} = ${item.answers}`;}
-    catch {console.error('No Phrases');};
+    catch {console.warn('No Phrases');};
 
     const actionButton = document.createElement('button');
     actionButton.textContent = 'Remove';
@@ -444,6 +446,9 @@ function custom() {
   showScore = function () {
     const label = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
     document.querySelector('.score').innerHTML = `${label}: Wins ${score.wins} | Losses ${score.losses}`;
+
+    try {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}\n Custom: Wins ${modeScores.custom.wins} | Losses ${modeScores.custom.losses}`}
+    catch {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}`}
   };
 
 const originalStartGame = startGame;
@@ -479,7 +484,6 @@ function checkAnswer() {
 
   document.getElementById("result").hidden = false;
   document.getElementById("goAgain").hidden = true
-  document.getElementById('userInput').value = '';
   document.getElementById("game").hidden = true;
 
   const isCorrect = current.answers.some(a => normalize(a) === normalize(userInput));
@@ -518,12 +522,14 @@ function checkAnswer() {
 };
 
 function showAnswers() {
+  const userInput = document.getElementById("userInput").value;
   if (current.answers.length < 2) {
     document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers.join(" / ")}`} else {
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWERS: ${current.answers.join(" / ")}`} else {
       document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nCORRECT ANSWER: ${current.answers}`
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWER: ${current.answers}`
     };
+  document.getElementById("userInput").value = '';
 }
 
 function reroll() {
