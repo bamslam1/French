@@ -92,3 +92,8 @@ input[type="text"] {
   top: 0px;
   z-index: -1;
 }
+
+.red {
+  background-color: red;
+  color: white;
+}
