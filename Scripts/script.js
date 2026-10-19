@@ -9,7 +9,6 @@ function load(key, fallback) {
 let prevFrench = null;
 
 let pressedStartCount = load('frenchStartPressed', 0);
-document.querySelector(".title").innerHTML = 'FrançaisFlash';
 let score = load('frenchScore', null) || {
   wins: 0,
   losses: 0
