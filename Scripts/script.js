@@ -378,7 +378,7 @@ function startGame(mode = currentMode) {
 
 let modeScores = {};
 try {
-  const MODES = ['all', 'easy', 'medium', 'hard'];
+  const MODES = ['all', 'easy', 'medium', 'hard', 'custom'];
   const readJSON = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
   const num = v => Number(v) || 0;
 
