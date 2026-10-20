@@ -353,11 +353,11 @@ function showStartScreen() {
   document.getElementById('result').hidden = true;
   document.getElementById('startScreen').hidden = false;
 
-  showScoreBool();
+  showScoreBool(false);
 };
 
 function showScoreBool(bool) {
-  if (window.innerWidth < 501 || bool) {
+  if (bool) {
     document.querySelector('.score').hidden = true;
     document.querySelector('.reset-score').hidden = true;
     document.querySelector('.reset-score2').hidden = true;
@@ -367,8 +367,6 @@ function showScoreBool(bool) {
     document.querySelector('.reset-score2').hidden = false;
   };
 }
-
-showScoreBool();
 
 function resetAllScore () {
   modeScores.easy.wins = 0; modeScores.easy.losses = 0; modeScores.medium.wins = 0; modeScores.medium.losses = 0; modeScores.hard.wins = 0; modeScores.hard.losses = 0; modeScores.all.losses = 0; modeScores.all.wins = 0; modeScores.custom.losses = 0; modeScores.custom.wins = 0; updateScore();
