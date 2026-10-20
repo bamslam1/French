@@ -352,9 +352,32 @@ function showStartScreen() {
   document.getElementById('game').hidden = true;
   document.getElementById('result').hidden = true;
   document.getElementById('startScreen').hidden = false;
+
+  showScoreBool();
 };
 
+function showScoreBool(bool) {
+  if (window.innerWidth < 501 || bool) {
+    document.querySelector('.score').hidden = true;
+    document.querySelector('.reset-score').hidden = true;
+    document.querySelector('.reset-score2').hidden = true;
+  } else {
+    document.querySelector('.score').hidden = false;
+    document.querySelector('.reset-score').hidden = false;
+    document.querySelector('.reset-score2').hidden = false;
+  };
+}
+
+showScoreBool();
+
+function resetAllScore () {
+  modeScores.easy.wins = 0; modeScores.easy.losses = 0; modeScores.medium.wins = 0; modeScores.medium.losses = 0; modeScores.hard.wins = 0; modeScores.hard.losses = 0; modeScores.all.losses = 0; modeScores.all.wins = 0; modeScores.custom.losses = 0; modeScores.custom.wins = 0; updateScore();
+}
+
 function startGame(mode = currentMode) {
+  document.querySelector('.score').hidden = false;
+  document.querySelector('.reset-score').hidden = false;
+  document.querySelector('.reset-score2').hidden = false;
   if (!phrasesByMode[mode]) mode = 'all';
   document.getElementById("gamemode").hidden = true;
   document.getElementById("custom").hidden = true;
@@ -564,4 +587,5 @@ function gamemode() {
   document.getElementById('custom').hidden = true;
   document.getElementById('gamemode').hidden = false;
   document.getElementById('game').hidden = true;
+  showScoreBool(true);
 };
