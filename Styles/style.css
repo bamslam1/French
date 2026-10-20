@@ -144,3 +144,9 @@ main {
     left: 45px;
   }
 }
+
+@media (max-width: 500px) {
+  .score, .reset-score, .reset-score2 {
+  transform: translate(0px, -60px);
+  }
+}
