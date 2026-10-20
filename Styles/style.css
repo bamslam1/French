@@ -104,6 +104,7 @@ input[type="text"] {
 
 .allScore {
   font: bold 16px, sans-serif;
+  white-space: pre-line;
 }
 
 #items li {
@@ -115,15 +116,31 @@ main {
 }
 
 @media (max-width: 600px) {
-  body {
-    padding: 90px 12px;
-  }
-}
-
-@media (max-width: 600px) {
   body { padding: 0 12px; }
 
-  button { padding: 10px 16px; margin: 4px 0; }
-  input[type="text"] { width: 100%; box-sizing: border-box; font-size: 16px; margin-bottom: 8px; }
-  .wrongGif, .rightGif { max-width: 80vw; height: auto; }
+  button {
+    padding: 10px 16px; margin: 4px 0;
+  }
+  input[type="text"] {
+    width: 100%; box-sizing: border-box; font-size: 16px; margin-bottom: 8px;
+  }
+  .wrongGif, .rightGif {
+    max-width: 80vw; height: auto;
+  }
+  .score {
+    top: auto;
+    bottom: 25px;
+    left: 20px;
+  }
+  .reset-score, .reset-score2 {
+    top: auto;
+    bottom: 5px;
+    right: auto;
+  }
+  .reset-score {
+    left: 165px;
+  }
+  .reset-score2 {
+    left: 45px;
+  }
 }
