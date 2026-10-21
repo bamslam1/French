@@ -6,6 +6,20 @@ function load(key, fallback) {
   catch { return fallback; }
 }
 
+let serverTime = null;
+
+async function getServerTime() {
+  try {
+    const res = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
+    serverTime = new Date(res.headers.get('Date'));
+  } catch {
+    error('Cannot fetch date');
+    serverTime = new Date();
+  };
+}
+
+getServerTime();
+
 let prevFrench = null;
 
 let pressedStartCount = load('frenchStartPressed', 0);
@@ -253,6 +267,29 @@ const hardPhrases = [
   { french: "Mieux vaut prévenir que guérir",                     answers: ["prevention is better than cure", "an ounce of prevention is worth a pound of cure", "it's better to prevent than to cure", "it is better to prevent than to cure", "better safe than sorry"] },
 ];
 
+const seasonalPhrases = [
+{ french: "Joyeux Halloween",                                  answers: ["happy halloween"] },
+{ french: "Des bonbons ou un sort",                           answers: ["trick or treat", "candy or a spell", "sweets or a spell"] },
+{ french: "Le fantôme",                                       answers: ["ghost", "the ghost", "a ghost"] },
+{ french: "La citrouille",                                    answers: ["pumpkin", "the pumpkin", "a pumpkin"] },
+{ french: "La sorcière",                                      answers: ["witch", "the witch", "a witch"] },
+{ french: "Le squelette",                                     answers: ["skeleton", "the skeleton", "a skeleton"] },
+{ french: "La chauve-souris",                                 answers: ["bat", "the bat", "a bat"] },
+{ french: "La maison hantée",                                 answers: ["haunted house", "the haunted house", "a haunted house"] },
+{ french: "J'ai peur",                                        answers: ["i'm scared", "i am scared", "i'm afraid", "i am afraid"] },
+{ french: "Ça fait peur",                                     answers: ["it's scary", "it is scary", "that's scary", "that is scary", "it's frightening", "it is frightening"] },
+{ french: "Il y a des toiles d'araignée partout",             answers: ["there are spiderwebs everywhere", "there are spider webs everywhere", "there are cobwebs everywhere"] },
+{ french: "Je me suis déguisé en vampire",                    answers: ["i dressed up as a vampire", "i dressed as a vampire", "i disguised myself as a vampire", "i wore a vampire costume"] },
+{ french: "Elle porte un costume de sorcière",                answers: ["she's wearing a witch costume", "she is wearing a witch costume", "she's wearing a witch's costume", "she is wearing a witch's costume"] },
+{ french: "Quel est ton déguisement?",                        answers: ["what is your costume?", "what's your costume?", "what is your costume", "what's your costume", "what are you dressed as?", "what are you dressed as"] },
+{ french: "J'ai sculpté une citrouille",                      answers: ["i carved a pumpkin", "i have carved a pumpkin", "i sculpted a pumpkin"] },
+{ french: "Raconte-moi une histoire qui fait peur",           answers: ["tell me a scary story", "tell me a story that is scary", "tell me a frightening story"] },
+{ french: "Les portes grincent dans la nuit",                 answers: ["the doors creak in the night", "the doors are creaking in the night", "the doors squeak in the night"] },
+{ french: "Ne sors pas seul la nuit d'Halloween",             answers: ["don't go out alone on halloween night", "do not go out alone on halloween night", "don't go out alone on halloween", "do not go out alone on halloween"] },
+{ french: "Les enfants sonnent à toutes les portes",          answers: ["the children ring every doorbell", "the kids ring every doorbell", "the children ring at every door", "the kids ring at every door"] },
+{ french: "Personne n'ose entrer dans la maison abandonnée",  answers: ["nobody dares to enter the abandoned house", "nobody dares enter the abandoned house", "no one dares to enter the abandoned house", "no one dares enter the abandoned house"] },
+]
+
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
 const soundRoll = new Audio("Sounds/dice.mp3");
@@ -261,7 +298,7 @@ const KEY = "customPhrases";
 
 let backToScreen = 0;
 
-const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases, custom: customPhrases };
+const phrasesByMode = { all: allPhrases, easy: easyPhrases, medium: mediumPhrases, hard: hardPhrases, custom: customPhrases, seasonal: seasonalPhrases };
 
 let currentMode = load('frenchGamemode', 'all');
 
@@ -318,7 +355,6 @@ function applyTheme() {
 };
 
 function invalidErr(log) {
-  console.warn(log);
   document.querySelector('.submit').hidden = true;
   document.getElementById('userInput').blur();
   setTimeout(() => {
@@ -369,10 +405,10 @@ function showScoreBool(bool) {
 }
 
 function resetAllScore () {
-  modeScores.easy.wins = 0; modeScores.easy.losses = 0; modeScores.medium.wins = 0; modeScores.medium.losses = 0; modeScores.hard.wins = 0; modeScores.hard.losses = 0; modeScores.all.losses = 0; modeScores.all.wins = 0; modeScores.custom.losses = 0; modeScores.custom.wins = 0; updateScore();
+  modeScores.easy.wins = 0; modeScores.easy.losses = 0; modeScores.medium.wins = 0; modeScores.medium.losses = 0; modeScores.hard.wins = 0; modeScores.hard.losses = 0; modeScores.all.losses = 0; modeScores.all.wins = 0; modeScores.custom.losses = 0; modeScores.custom.wins = 0; modeScores.seasonal.losses = 0; modeScores.seasonal.wins = 0; updateScore();
 }
 
-function startGame(mode = currentMode) {
+function showGameComponents(mode) {
   document.querySelector('.score').hidden = false;
   document.querySelector('.reset-score').hidden = false;
   document.querySelector('.reset-score2').hidden = false;
@@ -383,8 +419,30 @@ function startGame(mode = currentMode) {
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
   focus();
+}
 
+function error(mes) {
+  document.getElementById('error').hidden = false;
+  document.getElementById('error').textContent = mes;
+  error(mes);
+  setTimeout(() => {
+  document.getElementById('error').hidden = true;
+  }, 3000);
+}
+
+async function startGame(mode = currentMode) {
   currentMode = mode;
+  await getServerTime();
+
+  if (mode === 'seasonal' && serverTime.getFullYear() < 2027 && serverTime.getMonth() === 10 && serverTime.getDate() === 1) {
+    showGameComponents(mode);
+    } else if (serverTime.getMonth() === 9/* && serverTime.getDate() < 30*/) {
+      showGameComponents(mode);
+    } else if (mode !== 'seasonal') {
+      showGameComponents(mode);
+    } else {
+      error('This mode is unavailable');
+    }
   phrases = phrasesByMode[mode];
   localStorage.setItem('frenchGamemode', JSON.stringify(mode));
 
@@ -399,7 +457,7 @@ function startGame(mode = currentMode) {
 
 let modeScores = {};
 try {
-  const MODES = ['all', 'easy', 'medium', 'hard', 'custom'];
+  const MODES = ['all', 'easy', 'medium', 'hard', 'custom', 'seasonal'];
   const readJSON = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
   const num = v => Number(v) || 0;
 
@@ -445,7 +503,7 @@ function custom() {
 
     const itemText = document.createElement('span');
     try {itemText.textContent = `${item.french} = ${item.answers}`;}
-    catch {console.warn('No Phrases');};
+    catch {error('No Phrases');};
 
     const actionButton = document.createElement('button');
     actionButton.textContent = 'Remove';
@@ -467,7 +525,7 @@ function custom() {
     const label = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
     document.querySelector('.score').innerHTML = `${label}: Wins ${score.wins} | Losses ${score.losses}`;
 
-    try {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}\n Custom: Wins ${modeScores.custom.wins} | Losses ${modeScores.custom.losses}`}
+    try {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}\n Custom: Wins ${modeScores.custom.wins} | Losses ${modeScores.custom.losses}\nSeasonal: Wins ${modeScores.seasonal.wins} | Losses ${modeScores.seasonal.losses}`}
     catch {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}`}
   };
 
