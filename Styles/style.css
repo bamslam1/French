@@ -207,3 +207,9 @@ main {
   object-fit: contain;
   pointer-events: none;
 }
+
+.slowDown, .speedUp {
+  background-color: transparent;
+  border-radius: 5px;
+  border: 2px solid #4CAF50;
+}
