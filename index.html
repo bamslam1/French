@@ -20,6 +20,8 @@
   </p>
     </noscript>
     <img src="https://ps.w.org/svisciano-light-dark-theme-mode/assets/icon-256x256.png?rev=3535289" onclick="isDark = !isDark; applyTheme();" alt="Change Theme Button" class="theme-button" tabindex="0" onkeypress="if (event.key === 'Enter') {isDark = !isDark; applyTheme();};">
+
+    <!--<div class="scoreGroup transitionOut" onmouseenter="mouseIn = true; setTimeout(() => {}, 3000); if (mouseIn === true) {startFade(this, 2000);};" onmouseleave="mouseIn = false; this.classList.remove('hidden');">-->
     <p class="score">Loading...</p>
     <button class="reset-score" onclick="score.wins = 0; score.losses = 0; updateScore();">Reset Score</button>
     <button class="reset-score2" onclick="resetAllScore();">Reset All Score</button>
@@ -34,6 +36,8 @@
         </p>
         <a href="https://bamslam1.github.io/my-projects" target="_blank" rel="noopener noreferer"><button>Other Projects</button></a>
         <button data-page="game" onclick="pressedStartCount++; gamemode();">Start Game</button>
+        <br><br>
+        <button class="abtErrors" onclick="showAbtErrors();">More About Errors</button>
       </div>
 
       <div id="gamemode" hidden>
@@ -85,13 +89,37 @@
       id="result" hidden>
         <button class="back" onclick="startGame();">Back</button>
         <img src="https://media.tenor.com/Wlu-ZlnW7QYAAAAj/no-dislike.gif" class="wrongGif" alt="Incorrect GIF" hidden>
+        <img src="Images/halloween-lose-overlay.gif" class="sznWrongGif seasonalResult transitionOut" alt="Incorrect GIF" hidden>
+
         <img src="https://assets.dochipo.com/editor/animations/confetti/854a56df-cb2c-478c-ab6d-967ea2dee737.gif" class="rightGif" alt="Correct GIF" hidden>
+        <img src="Images/halloween-win-overlay.gif" class="sznRightGif seasonalResult transitionOut" alt="Incorrect GIF" hidden>
         <p class="result-message"></p>
         <p class="correct-answer space"></p>
         <button id="speech" onclick="speak();">🔊 Listen</button>
         <button data-page="result" onclick="
         pickPhrase(); startGame();" id="goAgain">Play Again</button>
       </div>
+
+      <div id="abtErrors" hidden>
+        <button onclick="showStartScreen();">Back</button>
+        <p>
+          If you are experiencing an error that says <b>"This mode is unavailable"</b> then it can mean three things,<br><b>(1) your internet is off,<br>(2) the date to play the mode has passed,<br>(3) a bug has occurred. If so, report it (even if you aren't sure)</b><br>Please note: The halloween mode only lasts until Novemeber 1st, then you will experience this error.
+          <br><br>
+          If you are experiencing an error that says <b>"Cannot fetch date"</b> then it can mean two things,<br><b>(1) your internet is off,<br>(2) a bug has occurred.</b>
+          <br><br>
+          If you are experiencing an error that says <b>"No Phrases"</b> then it can mean one thing,
+          <br>
+          <b>a bug has occurred and JavaScript isn't assigning the phrases properly.</b>
+          <br><br>
+          If you are experiencing an error that says <b>"Per-gamemode score setup failed: (extra error info)"</b> inside the <a href="https://google.com/search?q=web+browser+console" rel="noreferer" target="blank_" title="Click me!">console</a> then it can mean one thing,
+          <br>
+          <b>a bug has occurred when showing the score for the gamemode that you last played.</b>
+          <br><br>
+          If the game freezes, check the <a href="https://google.com/search?q=how+to+open+web+browser+console+mobile+and+desktop" rel="noreferer" target="blank_" title="Click me!">console</a> and take a screenshot or copy the text into a <a href="https://github.com/bamslam1/French/issues" rel="noreferer" target="blank_" title="Click me then press new issue to create a bug report.">bug report.</a>
+        </p>
+      </div>
+
+      <div class="filler"></div>
     </main>
     <script src="Scripts\script.js" defer></script>
   </body>
