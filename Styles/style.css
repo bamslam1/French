@@ -29,6 +29,7 @@ input[type="text"] {
   right: 10px;
   position: fixed;
   font: bold 20px verdana;
+  pointer-events: none;
 }
 
 .theme-button {
@@ -92,9 +93,10 @@ input[type="text"] {
 .ver {
   font: bold 12px monospace;
   color: grey;
-  position: relative;
+  position: sticky;
   top: 0px;
-  z-index: -1;
+  z-index: 9999;
+  pointer-events: none;
 }
 
 .red {
@@ -143,6 +145,9 @@ main {
   .reset-score2 {
     left: 45px;
   }
+  .filler {
+  padding: calc(0px + 15vw);
+}
 }
 
 @media (max-width: 500px) {
@@ -172,4 +177,33 @@ main {
   transform: translate(-50%, -50%);
   text-align: center;
   font: bold 30px monospace;
+}
+
+.seasonalResult {
+  object-fit: contain;
+  z-index: 9999;
+}
+
+.transitionOut {
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+.hidden {
+  opacity: 0;
+  /*pointer-events: none;*/
+}
+
+.seasonalResult {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  position: fixed;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  pointer-events: none;
 }
