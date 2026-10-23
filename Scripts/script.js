@@ -13,8 +13,8 @@ async function getServerTime() {
     const res = await fetch(location.href, { method: 'HEAD', cache: 'no-store' });
     serverTime = new Date(res.headers.get('Date'));
   } catch {
+    serverTime = null;
     error('Cannot fetch date');
-    serverTime = new Date();
   };
 }
 
@@ -388,6 +388,7 @@ function showStartScreen() {
   document.getElementById('game').hidden = true;
   document.getElementById('result').hidden = true;
   document.getElementById('startScreen').hidden = false;
+  document.getElementById('abtErrors').hidden = true;
 
   showScoreBool(false);
 };
@@ -397,14 +398,16 @@ function showScoreBool(bool) {
     document.querySelector('.score').hidden = true;
     document.querySelector('.reset-score').hidden = true;
     document.querySelector('.reset-score2').hidden = true;
+    document.querySelector('.filler').hidden = true;
   } else {
     document.querySelector('.score').hidden = false;
     document.querySelector('.reset-score').hidden = false;
     document.querySelector('.reset-score2').hidden = false;
+    document.querySelector('.filler').hidden = false;
   };
 }
 
-function resetAllScore () {
+function resetAllScore() {
   modeScores.easy.wins = 0; modeScores.easy.losses = 0; modeScores.medium.wins = 0; modeScores.medium.losses = 0; modeScores.hard.wins = 0; modeScores.hard.losses = 0; modeScores.all.losses = 0; modeScores.all.wins = 0; modeScores.custom.losses = 0; modeScores.custom.wins = 0; modeScores.seasonal.losses = 0; modeScores.seasonal.wins = 0; updateScore();
 }
 
@@ -412,6 +415,7 @@ function showGameComponents(mode) {
   document.querySelector('.score').hidden = false;
   document.querySelector('.reset-score').hidden = false;
   document.querySelector('.reset-score2').hidden = false;
+  document.querySelector('.filler').hidden = false;
   if (!phrasesByMode[mode]) mode = 'all';
   document.getElementById("gamemode").hidden = true;
   document.getElementById("custom").hidden = true;
@@ -424,25 +428,32 @@ function showGameComponents(mode) {
 function error(mes) {
   document.getElementById('error').hidden = false;
   document.getElementById('error').textContent = mes;
-  error(mes);
+  console.error(mes);
   setTimeout(() => {
   document.getElementById('error').hidden = true;
   }, 3000);
+
 }
 
 async function startGame(mode = currentMode) {
   currentMode = mode;
-  await getServerTime();
 
-  if (mode === 'seasonal' && serverTime.getFullYear() < 2027 && serverTime.getMonth() === 10 && serverTime.getDate() === 1) {
-    showGameComponents(mode);
-    } else if (serverTime.getMonth() === 9/* && serverTime.getDate() < 30*/) {
-      showGameComponents(mode);
-    } else if (mode !== 'seasonal') {
-      showGameComponents(mode);
-    } else {
-      error('This mode is unavailable');
-    }
+  if (mode === 'seasonal') {
+    await getServerTime();
+  };
+
+  let allowed = mode !== 'seasonal';
+  if (mode === 'seasonal' && serverTime !== null) {
+    allowed = serverTime.getMonth() === 9 ||
+      (serverTime.getFullYear() < 2027 && serverTime.getMonth() === 10 && serverTime.getDate() === 1);
+  };
+
+  if (!allowed) {
+    error('This mode is unavailable');
+    return;
+  };
+
+  showGameComponents(mode);
   phrases = phrasesByMode[mode];
   localStorage.setItem('frenchGamemode', JSON.stringify(mode));
 
@@ -453,7 +464,7 @@ async function startGame(mode = currentMode) {
   } else {
     pickPhrase();
   }
-};
+}
 
 let modeScores = {};
 try {
@@ -566,30 +577,58 @@ function checkAnswer() {
 
   const isCorrect = current.answers.some(a => normalize(a) === normalize(userInput));
 
+  let gif = '';
+
   if (isCorrect) {
-    const gif = document.querySelector(".rightGif");
+    if (currentMode === 'seasonal') {
+      gif = document.querySelector(".sznRightGif");
+    } else {
+      gif = document.querySelector(".rightGif");
+    }
     const result = document.querySelector(".result-message");
     soundWin.play();
     result.innerHTML = "Correct!";
     result.style.color = "limegreen";
     gif.hidden = false;
+    if (gif === document.querySelector(".sznRightGif")) {
+      gif.classList.remove('hidden');
+      setTimeout(() => {
+        //gif.hidden = true;
+        gif.classList.add('hidden');
+        document.getElementById("goAgain").hidden = false;
+      }, 2000);
+  } else {
     setTimeout(() => {
       gif.hidden = true;
       document.getElementById("goAgain").hidden = false;
     }, 1500);
+  }
     score.wins++;
     updateScore();
   } else {
-    const gif = document.querySelector(".wrongGif");
+    if (currentMode === 'seasonal') {
+      gif = document.querySelector(".sznWrongGif");
+    } else {
+      gif = document.querySelector(".wrongGif");
+    }
     const result = document.querySelector(".result-message");
     soundWrong.play();
     result.innerHTML = "Incorrect.";
     result.style.color = "red";
     gif.hidden = false;
+    if (gif === document.querySelector(".sznWrongGif")) {
+      gif.classList.remove('hidden');
+      setTimeout(() => {
+        //gif.hidden = true;
+        gif.classList.add('hidden');
+        document.getElementById("goAgain").hidden = false;
+      }, 2000);
+  } else {
     setTimeout(() => {
       gif.hidden = true;
       document.getElementById("goAgain").hidden = false;
     }, 1000);
+  }
     score.losses++;
     updateScore();
   }
@@ -645,3 +684,29 @@ function gamemode() {
   document.getElementById('game').hidden = true;
   showScoreBool(true);
 };
+
+function showAbtErrors() {
+    document.getElementById('startScreen').hidden = true;
+    document.getElementById('abtErrors').hidden = false;
+}
+
+function startFade(element, ms) {
+  setTimeout(() => {
+    if (mouseIn === true) {
+    element.classList.add('hidden');
+    };
+  }, ms);
+}
+
+function checkHidden(srpt) {
+  console.log(document.querySelector('scoreGroup transitionOut').classList);
+  /*if (document.querySelector('scoreGroup transitionOut').classList === 'scoreGroup transitionOut') {
+    if (srpt === 'resetAllScore') {
+      console.log('if');
+      //resetAllScore();
+    } else {
+      console.log('else');
+      //score.wins = 0; score.losses = 0; updateScore();
+    }
+  }*/
+}
