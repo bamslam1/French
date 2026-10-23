@@ -27,7 +27,7 @@
     <button class="reset-score2" onclick="resetAllScore();">Reset All Score</button>
     <a href="https://github.com/bamslam1/French/issues" target="_blank" rel="noopener noreferer" class="bott-right"><button title="Press new issue to create a report">Report A Bug</button></a>
     <p id="error" hidden>Error</p>
-    <p class="ver">v8.6.4</p>
+    <p class="ver">v8.6.5</p>
     <main>
       <div id="startScreen">
         <h1 class="title">FrançaisFlash</h1>
@@ -61,9 +61,10 @@
         <span lang="fr" translate="no"><p class="phrase">
         Loading...
         </p>
-        <button onclick="speedUp();" class="speedUp" alt="faster">🐇</button>
+        <div class="listenControls">
         <button id="speech" onclick="speak();">🔊 Listen</button>
-        <button id="slowSpeech" class="slowDown" onclick="slowDown();" alt="slower">🐢</button></span>
+        <input type="range" id="speechRate" name="volume" min="1" max="20">
+        <label id="displayRate"></label></div></span>
         <br><br>
         <div class="answer-row">
         <input type="text" id="userInput" placeholder="Type english here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
