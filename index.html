@@ -27,13 +27,14 @@
     <button class="reset-score2" onclick="resetAllScore();">Reset All Score</button>
     <a href="https://github.com/bamslam1/French/issues" target="_blank" rel="noopener noreferer" class="bott-right"><button title="Press new issue to create a report">Report A Bug</button></a>
     <p id="error" hidden>Error</p>
-    <p class="ver">v8.6.3</p>
+    <p class="ver">v8.5.4</p>
     <main>
       <div id="startScreen">
         <h1 class="title">FrançaisFlash</h1>
         <p>
           This game is designed to help you practice your French skills by providing a French phrase or word and you answer them in the input field. Your score is saved by each gamemode. Reloading the site will bring your most recently played gamemode's score up. Reloading the site will not result in a free phrase reroll (Patched in <a href="https://github.com/bamslam1/French/releases#release-v5.2.3" target="_blank" rel="noopener noreferer">v5.2.3</a>).<br><br>Please note that rerolling the phrase will take off one point.
         </p>
+        <label for="volume">Volume Control:</label>
         <a href="https://bamslam1.github.io/my-projects" target="_blank" rel="noopener noreferer"><button>Other Projects</button></a>
         <button data-page="game" onclick="pressedStartCount++; gamemode();">Start Game</button>
         <br><br>
@@ -61,7 +62,9 @@
         <span lang="fr" translate="no"><p class="phrase">
         Loading...
         </p>
-        <button id="speech" onclick="speak();">🔊 Listen</button></span>
+        <button onclick="speedUp();" class="speedUp" alt="faster">🐇</button>
+        <button id="speech" onclick="speak();">🔊 Listen</button>
+        <button id="slowSpeech" class="slowDown" onclick="slowDown();" alt="slower">🐢</button></span>
         <br><br>
         <div class="answer-row">
         <input type="text" id="userInput" placeholder="Type english here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
@@ -103,9 +106,9 @@
       <div id="abtErrors" hidden>
         <button onclick="showStartScreen();">Back</button>
         <p>
-          If you are experiencing an error that says <b>"This mode is unavailable"</b> then it can mean three things,<br><b>(1) your internet is off,<br>(2) the date to play the mode has passed,<br>(3) a bug has occurred. If so, report it (even if you aren't sure)</b><br>Please note: The halloween mode only lasts until Novemeber 1st, then you will experience this error.
+          If you are experiencing an error that says <b>"This mode is unavailable"</b> then it can mean three things,<br><b>(1) your internet is off,<br>(2) the date to play the mode has passed,<br>(3) a bug has occurred. If so, report it, even if you aren't sure.</b><br>Please note: The halloween mode only lasts until Novemeber 1st, then you will experience this error.
           <br><br>
-          If you are experiencing an error that says <b>"Cannot fetch date"</b> then it can mean two things,<br><b>(1) your internet is off,<br>(2) a bug has occurred.</b>
+          If you are experiencing an error that says <b>"Cannot fetch date"</b> then it can mean two things,<br><b>(1) your internet is off,<br>(2) a bug has occurred. If so, report it, even if you aren't sure.</b>
           <br><br>
           If you are experiencing an error that says <b>"No Phrases"</b> then it can mean one thing,
           <br>
