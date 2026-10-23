@@ -364,8 +364,6 @@ function invalidErr(log) {
     }, 1000);
 };
 
-let speechRate = load('speechRate', 0.9);
-
 function speak(text = current.french) {
   if (!('speechSynthesis' in window))
   {
@@ -383,26 +381,6 @@ function speak(text = current.french) {
   utterance.rate = speechRate;
   speechSynthesis.speak(utterance);
 };
-
-function slowDown() {
-  speechRate = Math.max(0.1, +(speechRate - 0.1).toFixed(1));
-  document.getElementById('error').hidden = false;
-  document.getElementById('error').textContent = speechRate + 'x';
-  localStorage.setItem('speechRate', JSON.stringify(speechRate));
-  setTimeout(() => {
-    document.getElementById('error').hidden = true;
-  }, 3000);
-}
-
-function speedUp() {
-  speechRate = Math.min(2.0, +(speechRate + 0.1).toFixed(1));
-  document.getElementById('error').hidden = false;
-  document.getElementById('error').textContent = speechRate + 'x';
-  localStorage.setItem('speechRate', JSON.stringify(speechRate));
-  setTimeout(() => {
-    document.getElementById('error').hidden = true;
-  }, 3000);
-}
 
 function showStartScreen() {
   document.getElementById('gamemode').hidden = true;
@@ -457,6 +435,18 @@ function error(mes) {
 }
 
 async function startGame(mode = currentMode) {
+  const slider = document.getElementById('speechRate');
+
+  slider.value = speechRate * 10;
+
+  document.getElementById('displayRate').textContent = speechRate + 'x';
+
+  slider.addEventListener('input', () => {
+    speechRate = Number(slider.value) / 10;
+    document.getElementById('displayRate').textContent = speechRate + 'x';
+    localStorage.setItem('speechRate', JSON.stringify(speechRate));
+  });
+
   currentMode = mode;
 
   if (mode === 'seasonal') {
@@ -731,3 +721,5 @@ function checkHidden(srpt) {
     }
   }*/
 }
+
+let speechRate = load('speechRate', 0.9);
