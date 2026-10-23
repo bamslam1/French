@@ -24,6 +24,21 @@ input[type="text"] {
   box-sizing: border-box;
 }
 
+.listenControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.listenControls input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  max-width: 500px;
+  width: auto;
+  padding: 7px;
+  box-sizing: border-box;
+}
+
 .score {
   top: 0px;
   right: 10px;
@@ -206,10 +221,4 @@ main {
   max-height: 100%;
   object-fit: contain;
   pointer-events: none;
-}
-
-.slowDown, .speedUp {
-  background-color: transparent;
-  border-radius: 5px;
-  border: 2px solid #4CAF50;
 }
