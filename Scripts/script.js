@@ -288,7 +288,7 @@ const seasonalPhrases = [
 { french: "Ne sors pas seul la nuit d'Halloween",             answers: ["don't go out alone on halloween night", "do not go out alone on halloween night", "don't go out alone on halloween", "do not go out alone on halloween"] },
 { french: "Les enfants sonnent à toutes les portes",          answers: ["the children ring every doorbell", "the kids ring every doorbell", "the children ring at every door", "the kids ring at every door"] },
 { french: "Personne n'ose entrer dans la maison abandonnée",  answers: ["nobody dares to enter the abandoned house", "nobody dares enter the abandoned house", "no one dares to enter the abandoned house", "no one dares enter the abandoned house"] },
-]
+];
 
 const soundWin = new Audio("Sounds/correct.mp3");
 const soundWrong = new Audio("Sounds/wrong.mp3");
@@ -358,11 +358,13 @@ function invalidErr(log) {
   document.querySelector('.submit').hidden = true;
   document.getElementById('userInput').blur();
   setTimeout(() => {
-    document.getElementById('userInput').value = ''
+    document.getElementById('userInput').value = '';
     focus();
     document.querySelector('.submit').hidden = false;
     }, 1000);
 };
+
+let speechRate = load('speechRate', 0.9);
 
 function speak(text = current.french) {
   if (!('speechSynthesis' in window))
@@ -371,17 +373,36 @@ function speak(text = current.french) {
     invalidErr('SPEACH UNSUPPORTED');
     return;
   }
-  let utterance = null;
   speechSynthesis.cancel();
   if (document.getElementById('result').hidden) {
-    utterance = new SpeechSynthesisUtterance(text);
-  } else {
-    utterance = new SpeechSynthesisUtterance(prevFrench);
-  };
+      utterance = new SpeechSynthesisUtterance(text);
+    } else {
+      utterance = new SpeechSynthesisUtterance(prevFrench);
+    };
   utterance.lang = 'fr-FR';
-  utterance.rate = 0.9;
+  utterance.rate = speechRate;
   speechSynthesis.speak(utterance);
 };
+
+function slowDown() {
+  speechRate = Math.max(0.1, +(speechRate - 0.1).toFixed(1));
+  document.getElementById('error').hidden = false;
+  document.getElementById('error').textContent = speechRate + 'x';
+  localStorage.setItem('speechRate', JSON.stringify(speechRate));
+  setTimeout(() => {
+    document.getElementById('error').hidden = true;
+  }, 3000);
+}
+
+function speedUp() {
+  speechRate = Math.min(2.0, +(speechRate + 0.1).toFixed(1));
+  document.getElementById('error').hidden = false;
+  document.getElementById('error').textContent = speechRate + 'x';
+  localStorage.setItem('speechRate', JSON.stringify(speechRate));
+  setTimeout(() => {
+    document.getElementById('error').hidden = true;
+  }, 3000);
+}
 
 function showStartScreen() {
   document.getElementById('gamemode').hidden = true;
@@ -523,7 +544,7 @@ function custom() {
     actionButton.addEventListener('click', () => {
       deletePhrase(index);
       custom();
-      return
+      return;
     });
 
     listItem.appendChild(itemText);
@@ -536,8 +557,8 @@ function custom() {
     const label = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
     document.querySelector('.score').innerHTML = `${label}: Wins ${score.wins} | Losses ${score.losses}`;
 
-    try {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}\n Custom: Wins ${modeScores.custom.wins} | Losses ${modeScores.custom.losses}\nSeasonal: Wins ${modeScores.seasonal.wins} | Losses ${modeScores.seasonal.losses}`}
-    catch {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}`}
+    try {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}\n Custom: Wins ${modeScores.custom.wins} | Losses ${modeScores.custom.losses}\nSeasonal: Wins ${modeScores.seasonal.wins} | Losses ${modeScores.seasonal.losses}`;}
+    catch {document.querySelector('.allScore').textContent = `Easy: Wins ${modeScores.easy.wins} | Losses ${modeScores.easy.losses}\nMedium: Wins ${modeScores.medium.wins} | Losses ${modeScores.medium.losses}\nHard: Wins ${modeScores.hard.wins} | Losses ${modeScores.hard.losses}`;}
   };
 
 const originalStartGame = startGame;
@@ -565,14 +586,14 @@ function checkAnswer() {
     document.querySelector('.submit').hidden = true;
     document.getElementById('userInput').value = 'INVALID ENTRY';
     invalidErr('INVALID ENTRY');
-    return
+    return;
     };
 
   delete savedPhrases[currentMode];
   storeSavedPhrases();
 
   document.getElementById("result").hidden = false;
-  document.getElementById("goAgain").hidden = true
+  document.getElementById("goAgain").hidden = true;
   document.getElementById("game").hidden = true;
 
   const isCorrect = current.answers.some(a => normalize(a) === normalize(userInput));
@@ -642,9 +663,9 @@ function showAnswers() {
   const userInput = document.getElementById("userInput").value;
   if (current.answers.length < 2) {
     document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWERS: ${current.answers.join(" / ")}`} else {
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWERS: ${current.answers.join(" / ")}`;} else {
       document.querySelector(".correct-answer").textContent =
-    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWER: ${current.answers}`
+    `PHRASE: ${current.french}\nYOUR ANSWER: ${userInput}\nCORRECT ANSWER: ${current.answers}`;
     };
   document.getElementById("userInput").value = '';
 }
