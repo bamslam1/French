@@ -290,9 +290,57 @@ const seasonalPhrases = [
 { french: "Personne n'ose entrer dans la maison abandonnée",  answers: ["nobody dares to enter the abandoned house", "nobody dares enter the abandoned house", "no one dares to enter the abandoned house", "no one dares enter the abandoned house"] },
 ];
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function boost(audio, gain) {
+  const source = audioCtx.createMediaElementSource(audio);
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = gain;
+  source.connect(gainNode).connect(audioCtx.destination);
+  return gainNode;
+}
+
 const soundWin = new Audio("Sounds/correct.mp3");
+boost(soundWin, 2);
 const soundWrong = new Audio("Sounds/wrong.mp3");
+boost(soundWrong, 2);
 const soundRoll = new Audio("Sounds/dice.mp3");
+boost(soundRoll, 3);
+const bgm = new Audio('Sounds/bgm.mp3');
+bgm.loop = true;
+bgm.volume = 0;
+
+const BGM_VOLUME = 0.2;
+const FADE_MS = 1500;
+let fadeTimer = null;
+
+function fadeTo(target, onDone) {
+  clearInterval(fadeTimer);
+  const steps = 30;
+  const stepMs = FADE_MS / steps;
+  const delta = (target - bgm.volume) / steps;
+  let i = 0;
+  fadeTimer = setInterval(() => {
+    i++;
+    bgm.volume = Math.min(1, Math.max(0, bgm.volume + delta));
+    if (i >= steps) {
+      clearInterval(fadeTimer);
+      bgm.volume = target;
+      if (onDone) onDone();
+    }
+  }, stepMs);
+}
+
+function startBgm() {
+  bgm.play().then(() => fadeTo(BGM_VOLUME)).catch(() => {error('Unable to begin bgm playback')});
+}
+
+function stopBgm() {
+  fadeTo(0, () => {
+    bgm.pause();
+    bgm.currentTime = 0;
+  });
+}
 
 const KEY = "customPhrases";
 
@@ -390,7 +438,8 @@ function showStartScreen() {
   document.getElementById('abtErrors').hidden = true;
 
   showScoreBool(false);
-};
+  checkSeasonal(); // <--- THIS REMOVES THE OVERLAY ON THE START SCREEN
+}
 
 function showScoreBool(bool) {
   if (bool) {
@@ -421,7 +470,64 @@ function showGameComponents(mode) {
   document.getElementById("result").hidden = true;
   document.getElementById("game").hidden = false;
   document.getElementById('userInput').value = '';
+  checkSeasonal(mode);
   focus();
+}
+
+function checkSeasonal(mode) {
+  const activeMode = mode || currentMode;
+
+  // 1. Check which screens are visible
+  const isGameVisible = !document.getElementById("game").hidden;
+  const isResultVisible = !document.getElementById("result").hidden;
+
+  // 2. Determine if overlay should be active (Seasonal Mode + Game OR Result screen)
+  const shouldShowOverlay = activeMode === 'seasonal' && (isGameVisible || isResultVisible);
+
+  if (shouldShowOverlay) {
+    document.body.classList.add('halloween');
+    document.getElementById('mute').hidden = false;
+
+    // Apply styles to buttons on Game AND Result screens
+    document.querySelectorAll('.move-button, button, button[type="game"]').forEach(b => {
+      // Exclude Reset, Gamemode Menu, and Bug Report buttons
+      const isResetButton = b.classList.contains('reset-score-button') || b.closest('.reset-score') || b.closest('.reset-score2');
+      const isGamemodeMenuButton = b.closest('#gamemode');
+      const isBugReportButton = b.textContent.includes('Report A Bug');
+      
+      if (!isResetButton && !isGamemodeMenuButton && !isBugReportButton) {
+        b.classList.add('seasonal');
+      } else {
+        b.classList.remove('seasonal');
+      }
+    });
+
+    // Ensure music continues if already playing (prevents restarting)
+    if (!muted && bgm.paused) {
+      startBgm();
+    }
+  } else {
+    // 3. Remove effects on Start Screen, Gamemode Screen, etc.
+    document.body.classList.remove('halloween');
+    document.querySelectorAll('.move-button, button, button[type="game"]').forEach(b => b.classList.remove('seasonal'));
+    
+    document.getElementById('mute').hidden = true;
+    stopBgm();
+  }
+}
+
+let muted = false;
+
+function toggleMute() {
+  if (!muted) {
+    stopBgm();
+    document.getElementById('mute').textContent = '🔇';
+    muted = true;
+  } else {
+    startBgm();
+    document.getElementById('mute').textContent = '🔊';
+    muted = false;
+  }
 }
 
 function error(mes) {
@@ -463,7 +569,6 @@ async function startGame(mode = currentMode) {
     error('This mode is unavailable');
     return;
   };
-
   showGameComponents(mode);
   phrases = phrasesByMode[mode];
   localStorage.setItem('frenchGamemode', JSON.stringify(mode));
@@ -577,7 +682,7 @@ function checkAnswer() {
     document.getElementById('userInput').value = 'INVALID ENTRY';
     invalidErr('INVALID ENTRY');
     return;
-    };
+  }
 
   delete savedPhrases[currentMode];
   storeSavedPhrases();
@@ -585,6 +690,8 @@ function checkAnswer() {
   document.getElementById("result").hidden = false;
   document.getElementById("goAgain").hidden = true;
   document.getElementById("game").hidden = true;
+
+  checkSeasonal(); // <--- THIS APPLIES THE OVERLAY TO THE RESULT SCREEN
 
   const isCorrect = current.answers.some(a => normalize(a) === normalize(userInput));
 
@@ -604,16 +711,15 @@ function checkAnswer() {
     if (gif === document.querySelector(".sznRightGif")) {
       gif.classList.remove('hidden');
       setTimeout(() => {
-        //gif.hidden = true;
         gif.classList.add('hidden');
         document.getElementById("goAgain").hidden = false;
       }, 2000);
-  } else {
-    setTimeout(() => {
-      gif.hidden = true;
-      document.getElementById("goAgain").hidden = false;
-    }, 1500);
-  }
+    } else {
+      setTimeout(() => {
+        gif.hidden = true;
+        document.getElementById("goAgain").hidden = false;
+      }, 1500);
+    }
     score.wins++;
     updateScore();
   } else {
@@ -630,16 +736,15 @@ function checkAnswer() {
     if (gif === document.querySelector(".sznWrongGif")) {
       gif.classList.remove('hidden');
       setTimeout(() => {
-        //gif.hidden = true;
         gif.classList.add('hidden');
         document.getElementById("goAgain").hidden = false;
       }, 2000);
-  } else {
-    setTimeout(() => {
-      gif.hidden = true;
-      document.getElementById("goAgain").hidden = false;
-    }, 1000);
-  }
+    } else {
+      setTimeout(() => {
+        gif.hidden = true;
+        document.getElementById("goAgain").hidden = false;
+      }, 1000);
+    }
     score.losses++;
     updateScore();
   }
@@ -647,7 +752,7 @@ function checkAnswer() {
   showAnswers();
   prevFrench = current.french;
   showScore();
-};
+}
 
 function showAnswers() {
   const userInput = document.getElementById("userInput").value;
@@ -666,6 +771,7 @@ function reroll() {
   showAnswers();
   document.getElementById("game").hidden = true;
   document.getElementById("result").hidden = false;
+  checkSeasonal();
   score.losses++;
   updateScore();
   prevFrench = current.french;
@@ -688,13 +794,15 @@ function normalize(text) {
 };
 
 function gamemode() {
+  stopBgm(); // Explicitly cut off BGM immediately when exiting to the screen select menu
   document.getElementById('startScreen').hidden = true;
   document.getElementById('result').hidden = true;
   document.getElementById('custom').hidden = true;
   document.getElementById('gamemode').hidden = false;
   document.getElementById('game').hidden = true;
   showScoreBool(true);
-};
+  checkSeasonal();
+}
 
 function showAbtErrors() {
     document.getElementById('startScreen').hidden = true;
