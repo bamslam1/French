@@ -2,6 +2,16 @@ body {
   font: normal 16px verdana;
 }
 
+body.halloween main {
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+#mute {
+  right: 85px;
+  position: fixed;
+}
+
 button {
   font: bold 14px verdana;
   padding: 7.5px 15px;
@@ -12,6 +22,17 @@ button {
   cursor: pointer;
   max-width: 100%;
   white-space: normal;
+  transition: transform 0.1s;
+}
+
+button:hover {
+  filter: drop-shadow(2px 3px 0 #4caf4f) brightness(1.1);
+  z-index: 9999;
+}
+
+button:active {
+  transform: translate(2px, 2px);
+  filter: drop-shadow(0 1px 0 #4caf4f);
 }
 
 input[type="text"] {
@@ -37,6 +58,15 @@ input[type="text"] {
   width: auto;
   padding: 7px;
   box-sizing: border-box;
+  
+}
+
+input[type="range"] {
+  cursor: grab;
+}
+
+input[type="range"]:active {
+  cursor: grabbing;
 }
 
 .score {
@@ -45,6 +75,7 @@ input[type="text"] {
   position: fixed;
   font: bold 20px verdana;
   pointer-events: none;
+  z-index: 9999;
 }
 
 .theme-button {
@@ -54,6 +85,7 @@ input[type="text"] {
   right: 10px;
   position: fixed;
   cursor: pointer;
+  z-index: 9999;
 }
 
 .wrongGif {
@@ -91,6 +123,17 @@ input[type="text"] {
   border-radius: 5px;
   position: fixed;
   cursor: pointer;
+  z-index: 9999;
+}
+
+.reset-score:hover, .reset-score2:hover {
+  filter: drop-shadow(2px 3px 0 #ed2828) brightness(1.1);
+  z-index: 9999;
+}
+
+.reset-score:active, .reset-score2:active {
+  transform: translate(2px, 2px);
+  filter: drop-shadow(0 1px 0 #ed2828);
 }
 
 .space {
@@ -103,11 +146,13 @@ input[type="text"] {
   width: 100px;
   height: 10px;
   position: fixed;
+  z-index: 9999;
 }
 
 .ver {
   font: bold 12px monospace;
-  color: grey;
+  -webkit-text-stroke: 0.5px black;
+  color: rgb(255, 255, 255);
   position: sticky;
   top: 0px;
   z-index: 9999;
@@ -162,12 +207,25 @@ main {
   }
   .filler {
   padding: calc(0px + 15vw);
-}
+  }
+    body.halloween #overlay {
+    display: none;
+  }
+  body.halloween #overlay-v {
+    display: block;
+  }
+  body.halloween main {
+    max-width: 85%;
+  }
 }
 
 @media (max-width: 500px) {
   .score, .reset-score, .reset-score2 {
   transform: translate(0px, -60px);
+  }
+  .reset-score:active, .reset-score2:active {
+  transform: translate(2px, -58px);
+  filter: drop-shadow(0 1px 0 #ed2828);
   }
 }
 
@@ -182,6 +240,10 @@ main {
     flex: 1;
     width: auto;
     min-width: 0;
+  }
+
+  #mute {
+  position: static;
   }
 }
 
@@ -221,4 +283,56 @@ main {
   max-height: 100%;
   object-fit: contain;
   pointer-events: none;
+}
+
+.seasonal {
+  position: relative;
+  border: none;
+  padding: 8px 21px;
+  font: bold 16px Verdana, sans-serif;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: white;
+  background: linear-gradient(180deg, #ffa133 0%, #ff7a00 55%, #e86400 100%);
+  clip-path: polygon(0 12%, 100% 0, 97% 100%, 3% 88%);
+  filter: drop-shadow(2px 3px 0 #b34700);
+  cursor: pointer;
+  transition: transform 0.1s;
+  z-index: 1;
+}
+
+.seasonal:hover {
+  filter: drop-shadow(2px 3px 0 #b34700) brightness(1.1);
+  z-index: 9999;
+}
+
+.seasonal:active {
+  transform: translate(2px, 2px);
+  filter: drop-shadow(0 1px 0 #b34700);
+}
+
+.bg {
+  z-index: -1;
+
+}
+
+.overlay {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+#overlay, #overlay-v {
+  display: none;
+}
+
+body.halloween #overlay {
+  display: block;
 }
