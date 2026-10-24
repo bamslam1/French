@@ -27,7 +27,7 @@
     <button class="reset-score2" onclick="resetAllScore();">Reset All Score</button>
     <a href="https://github.com/bamslam1/French/issues" target="_blank" rel="noopener noreferer" class="bott-right"><button title="Press new issue to create a report">Report A Bug</button></a>
     <p id="error" hidden>Error</p>
-    <p class="ver">v8.6.5</p>
+    <p class="ver">v9.6.5</p>
     <main>
       <div id="startScreen">
         <h1 class="title">FrançaisFlash</h1>
@@ -57,20 +57,23 @@
       </div>
 
       <div id="game" hidden>
-        <button class="back" onclick="gamemode();">Back</button>
+        <img src="Images\halloween-overlay.png" class="overlay" id="overlay" hidden>
+        <img src="Images\halloween-overlay-vertical.png" class="overlay" id="overlay-v" hidden>
+        <button type="game" class="back" onclick="stopBgm(); gamemode();">Back</button>
+        <button type="game" id="mute" onclick="toggleMute();">🔊</button>
         <span lang="fr" translate="no"><p class="phrase">
         Loading...
         </p>
         <div class="listenControls">
-        <button id="speech" onclick="speak();">🔊 Listen</button>
+        <button type="game" id="speech" onclick="speak();">🔊 Listen</button>
         <input type="range" id="speechRate" name="volume" min="1" max="20">
         <label id="displayRate"></label></div></span>
         <br><br>
         <div class="answer-row">
         <input type="text" id="userInput" placeholder="Type english here" onkeypress="if(event.key === 'Enter') checkAnswer();"/>
-        <button class="submit" onclick="checkAnswer();">Submit</button>
-        <button class="reroll" onclick="reroll(false);">Reroll</button>
-        <button onclick="custom();">Edit Phrases</button>
+        <button type="game" class="submit" onclick="checkAnswer();">Submit</button>
+        <button type="game" class="reroll" onclick="reroll(false);">Reroll</button>
+        <button type="game" onclick="custom();">Edit Phrases</button>
         </div>
       </div>
 
@@ -88,14 +91,15 @@
         <ul id="items"></ul>
       </div>
 
-      <div
-      id="result" hidden>
+      <div id="result" hidden>
         <button class="back" onclick="startGame();">Back</button>
         <img src="https://media.tenor.com/Wlu-ZlnW7QYAAAAj/no-dislike.gif" class="wrongGif" alt="Incorrect GIF" hidden>
         <img src="Images/halloween-lose-overlay.gif" class="sznWrongGif seasonalResult transitionOut" alt="Incorrect GIF" hidden>
 
         <img src="https://assets.dochipo.com/editor/animations/confetti/854a56df-cb2c-478c-ab6d-967ea2dee737.gif" class="rightGif" alt="Correct GIF" hidden>
         <img src="Images/halloween-win-overlay.gif" class="sznRightGif seasonalResult transitionOut" alt="Incorrect GIF" hidden>
+        <img src="Images\halloween-overlay.png" class="overlay" id="overlay" hidden>
+        <img src="Images\halloween-overlay-vertical.png" class="overlay" id="overlay-v" hidden>
         <p class="result-message"></p>
         <p class="correct-answer space"></p>
         <button id="speech" onclick="speak();">🔊 Listen</button>
@@ -106,17 +110,21 @@
       <div id="abtErrors" hidden>
         <button onclick="showStartScreen();">Back</button>
         <p>
-          If you are experiencing an error that says <b>"This mode is unavailable"</b> then it can mean three things,<br><b>(1) your internet is off,<br>(2) the date to play the mode has passed,<br>(3) a bug has occurred. If so, report it, even if you aren't sure.</b><br>Please note: The halloween mode only lasts until Novemeber 1st, then you will experience this error.
+          If you are experiencing an error that reads <b>"This mode is unavailable"</b> then it can mean three things,<br><b>(1) your internet is off,<br>(2) the date to play the mode has passed,<br>(3) a bug has occurred. If so, report it, even if you aren't sure.</b><br>Please note: The halloween mode only lasts until Novemeber 1st, then you will experience this error.
           <br><br>
-          If you are experiencing an error that says <b>"Cannot fetch date"</b> then it can mean two things,<br><b>(1) your internet is off,<br>(2) a bug has occurred. If so, report it, even if you aren't sure.</b>
+          If you are experiencing an error that reads <b>"Cannot fetch date"</b> then it can mean two things,<br><b>(1) your internet is off,<br>(2) a bug has occurred. If so, report it, even if you aren't sure.</b>
           <br><br>
-          If you are experiencing an error that says <b>"No Phrases"</b> then it can mean one thing,
+          If you are experiencing an error that reads <b>"No Phrases"</b> then it can mean one thing,
           <br>
           <b>a bug has occurred and JavaScript isn't assigning the phrases properly.</b>
           <br><br>
-          If you are experiencing an error that says <b>"Per-gamemode score setup failed: (extra error info)"</b> inside the <a href="https://google.com/search?q=web+browser+console" rel="noreferer" target="blank_" title="Click me!">console</a> then it can mean one thing,
+          If you are experiencing an error that reads <b>"Per-gamemode score setup failed: (extra error info)"</b> inside the <a href="https://google.com/search?q=web+browser+console" rel="noreferer" target="blank_" title="Click me!">console</a> then it can mean one thing,
           <br>
           <b>a bug has occurred when showing the score for the gamemode that you last played.</b>
+          <br><br>
+          <p>If you are experiencing an error that reads <b>"Unable to begin bgm playback"</b> this can only mean one thing,
+          <br>
+          <b>a bug has occurred in the proccess of playing the bgm file.</b></p>
           <br><br>
           If the game freezes, check the <a href="https://google.com/search?q=how+to+open+web+browser+console+mobile+and+desktop" rel="noreferer" target="blank_" title="Click me!">console</a> and take a screenshot or copy the text into a <a href="https://github.com/bamslam1/French/issues" rel="noreferer" target="blank_" title="Click me then press new issue to create a bug report.">bug report.</a>
         </p>
