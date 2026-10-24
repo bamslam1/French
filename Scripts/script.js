@@ -441,6 +441,62 @@ function showStartScreen() {
   checkSeasonal(); // <--- THIS REMOVES THE OVERLAY ON THE START SCREEN
 }
 
+let notificationPerms = null;
+
+function requestNotificationPermission() {
+  Notification.requestPermission().then((permission) => {
+    permission = notificationPerms;
+  });
+}
+
+function sendNotification(body) {
+  if (Notification.permission === "granted") {
+    const notification = new Notification
+("FrançaisFlash 👻", {
+    body: body,
+    icon: "https://bamslam1.github.io/french/Images/favicon-halloween.png"
+});
+
+    // Optional: Handle clicking the notification
+    notification.onclick = () => {
+      window.focus(); 
+    };
+  } else {
+    console.log("Notifications are blocked or not requested yet.");
+  }
+}
+
+// Make sure this is at the absolute bottom of script.js, outside of any other functions!
+Array.from(document.querySelectorAll("button")).forEach((btn) => {
+  if (btn.textContent.trim() === "Test Notification") {
+    
+    btn.onclick = () => {
+      console.log("Test Notification button clicked! Initializing OneSignal queue...");
+      
+      window.OneSignal = window.OneSignal || [];
+      
+      OneSignal.push(async function() {
+        try {
+          console.log("OneSignal library ready inside queue. Triggering popup window...");
+          
+          // Request browser prompt permission via OneSignal
+          await OneSignal.Notifications.requestPermission();
+          
+          const targetTime = new Date(Date.now() + 5 * 60 * 1000);
+          alert("Spooky reminder registered successfully! You can safely close the site now. See you in 5 minutes! 🎃");
+          console.log("Offline push successfully scheduled for:", targetTime);
+          console.log(targetTime);
+          
+        } catch (error) {
+          console.error("OneSignal push configuration failed inside queue:", error);
+        }
+      });
+    };
+    
+    console.log("Successfully bound OneSignal push logic to the Test Notification button!");
+  }
+});
+
 function showScoreBool(bool) {
   if (bool) {
     document.querySelector('.score').hidden = true;
